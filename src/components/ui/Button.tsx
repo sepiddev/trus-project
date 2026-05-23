@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { DURATION_SM, EASE_IN_OUT } from '@/motion/variants'
 
-export type ButtonVariant = 'primary' | 'ghost' | 'outline-accent'
+export type ButtonVariant = 'primary' | 'ghost' | 'outline-accent' | 'gradient'
 
 export interface ButtonProps {
   children: React.ReactNode
@@ -10,19 +10,26 @@ export interface ButtonProps {
   onClick?: () => void
   type?: 'button' | 'submit' | 'reset'
   className?: string
+  style?: React.CSSProperties
   'aria-label'?: string
 }
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium font-body cursor-pointer transition-colors focus-visible:outline-none select-none'
+  'inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium font-body cursor-pointer transition-all focus-visible:outline-none select-none'
 
 const variants: Record<ButtonVariant, string> = {
   'primary':
-    'bg-brand-accent text-white hover:bg-brand-accent-light',
+    'rounded-[8px] bg-brand-accent text-white hover:bg-brand-accent-light',
   'ghost':
-    'bg-transparent text-brand-white border border-brand-border-2 hover:bg-brand-surface',
+    'rounded-[8px] bg-transparent text-brand-white border border-[rgba(255,255,255,0.5)] hover:bg-[rgba(255,255,255,0.05)]',
   'outline-accent':
-    'bg-transparent text-brand-accent border border-brand-accent hover:bg-[rgba(124,58,237,0.1)]',
+    'rounded-full bg-transparent text-brand-accent border border-brand-accent hover:bg-[rgba(135,93,217,0.1)]',
+  'gradient':
+    'rounded-[8px] text-white hover:opacity-90',
+}
+
+const gradientBg: React.CSSProperties = {
+  background: 'linear-gradient(90deg, #875DD9 0%, #5328A8 100%)',
 }
 
 export function Button({
@@ -32,9 +39,16 @@ export function Button({
   onClick,
   type = 'button',
   className = '',
+  style,
   'aria-label': ariaLabel,
 }: ButtonProps) {
   const classes = `${base} ${variants[variant]} ${className}`
+
+  // Merge gradient background with any caller-supplied styles
+  const computedStyle: React.CSSProperties | undefined =
+    variant === 'gradient'
+      ? { ...gradientBg, ...style }
+      : style
 
   const motionProps = {
     whileHover: { scale: 1.03 },
@@ -47,6 +61,7 @@ export function Button({
       <motion.a
         href={href}
         className={classes}
+        style={computedStyle}
         aria-label={ariaLabel}
         {...motionProps}
       >
@@ -59,6 +74,7 @@ export function Button({
     <motion.button
       type={type}
       className={classes}
+      style={computedStyle}
       onClick={onClick}
       aria-label={ariaLabel}
       {...motionProps}

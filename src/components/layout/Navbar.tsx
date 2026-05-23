@@ -9,8 +9,8 @@ export interface NavbarProps {
 }
 
 export function Navbar({ data = siteConfig.nav }: NavbarProps) {
-  const [scrolled,     setScrolled]     = useState(false)
-  const [mobileOpen,   setMobileOpen]   = useState(false)
+  const [scrolled,   setScrolled]   = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -34,33 +34,32 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
         className="fixed inset-x-0 top-0 z-50"
         role="banner"
       >
-        {/* Backdrop — fades in on scroll */}
+        {/* Backdrop — fades in on scroll, border always present */}
         <motion.div
-          className="absolute inset-0 border-b"
+          className="absolute inset-0 border-b border-[rgba(255,255,255,0.18)]"
           animate={{
-            backgroundColor: scrolled ? 'rgba(15, 15, 24, 0.85)' : 'rgba(0,0,0,0)',
-            borderColor:     scrolled ? 'rgba(26, 26, 42, 0.8)'  : 'rgba(0,0,0,0)',
-            backdropFilter:  scrolled ? 'blur(20px)'              : 'blur(0px)',
+            backgroundColor: scrolled ? 'rgba(7, 7, 13, 0.92)' : 'rgba(0,0,0,0)',
+            backdropFilter:  scrolled ? 'blur(20px)'            : 'blur(0px)',
           }}
           transition={{ duration: DURATION_SM, ease: EASE_PREMIUM }}
           aria-hidden="true"
         />
 
         <nav
-          className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:px-10 lg:px-20"
+          className="relative mx-auto flex h-[72px] max-w-[1200px] items-center justify-between px-5"
           aria-label="Main navigation"
         >
           {/* Logo */}
           <a
             href="/"
-            className="font-display text-xl font-bold tracking-tight text-brand-white focus-visible:rounded"
+            className="font-display text-xl font-bold tracking-tight text-brand-white focus-visible:rounded shrink-0"
             aria-label={`${data.logo} — home`}
           >
             {data.logo}
           </a>
 
           {/* Desktop nav links */}
-          <ul className="hidden md:flex items-center gap-8" role="list">
+          <ul className="hidden lg:flex items-center gap-[10px]" role="list">
             {data.links.map((link) => (
               <li key={link.label}>
                 <NavLink href={link.href} label={link.label} />
@@ -69,15 +68,19 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
           </ul>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
-            <Button variant="primary" href={data.cta.href}>
+          <div className="hidden lg:flex items-center shrink-0">
+            <Button
+              variant="gradient"
+              href={data.cta.href}
+              className="h-[44px] w-[148px] text-[16px] font-medium"
+            >
               {data.cta.label}
             </Button>
           </div>
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden relative z-10 flex flex-col gap-1.5 p-2"
+            className="lg:hidden relative z-10 flex flex-col gap-1.5 p-2"
             onClick={() => setMobileOpen((o) => !o)}
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
@@ -122,7 +125,7 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
               ))}
             </ul>
             <div className="mt-auto">
-              <Button variant="primary" href={data.cta.href} className="w-full justify-center">
+              <Button variant="gradient" href={data.cta.href} className="w-full justify-center">
                 {data.cta.label}
               </Button>
             </div>
@@ -139,12 +142,12 @@ function NavLink({ href, label }: { href: string; label: string }) {
   return (
     <a
       href={href}
-      className="group relative text-sm font-body font-medium text-brand-muted hover:text-brand-white transition-colors duration-200"
+      className="group relative text-[15px] font-body font-normal text-brand-white hover:text-brand-accent-light transition-colors duration-200 px-[7px] py-[4px]"
     >
       {label}
       {/* Animated underline */}
       <span
-        className="absolute -bottom-0.5 left-0 h-px w-0 group-hover:w-full transition-all duration-300 rounded-full"
+        className="absolute -bottom-0.5 left-[7px] right-[7px] h-px w-0 group-hover:w-[calc(100%-14px)] transition-all duration-300 rounded-full"
         style={{ background: 'var(--color-brand-accent-light)' }}
         aria-hidden="true"
       />
