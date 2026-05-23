@@ -1,6 +1,9 @@
 /**
  * Single source of truth for all user-facing content.
  * Swap this file (and /src/assets/) to rebrand for a new client.
+ *
+ * Accent convention: wrap any word in [brackets] to render it in the accent color.
+ * Example: "at [TruS]" → "at " (white) + "TruS" (brand-accent, bold)
  */
 export const siteConfig = {
   name: 'TruS',
@@ -12,31 +15,39 @@ export const siteConfig = {
   nav: {
     logo: 'TruS',
     links: [
-      { label: 'About',     href: '#about' },
+      { label: 'Home',      href: '#'          },
+      { label: 'Services',  href: '#services'  },
       { label: 'Portfolio', href: '#portfolio' },
-      { label: 'Services',  href: '#services' },
-      { label: 'Team',      href: '#team' },
-      { label: 'Contact',   href: '#contact' },
+      { label: 'Templates', href: '#templates' },
+      { label: 'Pricing',   href: '#pricing'   },
+      { label: 'About',     href: '#about'     },
+      { label: 'Contact',   href: '#contact'   },
     ],
     cta: { label: 'Get Started', href: '#contact' },
   },
 
   hero: {
-    badge: 'Web Development Studio',
+    /** Displayed below CTAs as "We ◉ READY-MADE TEMPLATES" */
+    badge:       'READY-MADE TEMPLATES',
+    badgePrefix: 'We',
+    /**
+     * Headline lines. Use [word] to apply accent color + bold weight to that word.
+     * The last line gets a blinking cursor appended.
+     */
     headline: [
       'Turning Ideas',
       'into Products',
-      'at TruS',
+      'at [TruS]',
     ] as const,
-    body: 'We build modern, highly interactive websites with advanced motion design and full client ownership — no platform lock-in, ever.',
+    body: 'Carefully crafted templates designed to help you launch faster and grow smarter.',
     cta: {
-      primary:   { label: 'Start a Project', href: '#contact' },
-      secondary: { label: 'Explore Work',    href: '#portfolio' },
+      primary:   { label: 'Browse Templates', href: '#templates' },
+      secondary: { label: 'Why TruS',         href: '#about'     },
     },
     stats: [
       { value: '200+',   label: 'Projects Delivered' },
-      { value: '4.8',    label: 'Client Rating' },
-      { value: '1,200+', label: 'Happy Clients' },
+      { value: '4.8',    label: 'Client Rating'      },
+      { value: '1,200+', label: 'Happy Clients'      },
     ],
   },
 } as const
