@@ -60,9 +60,9 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
 
           {/* Desktop nav links */}
           <ul className="hidden lg:flex items-center gap-[10px]" role="list">
-            {data.links.map((link) => (
+            {data.links.map((link, i) => (
               <li key={link.label}>
-                <NavLink href={link.href} label={link.label} />
+                <NavLink href={link.href} label={link.label} active={i === 0} />
               </li>
             ))}
           </ul>
@@ -138,17 +138,23 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
 
 // ─── NavLink ─────────────────────────────────────────────────────────────────
 
-function NavLink({ href, label }: { href: string; label: string }) {
+function NavLink({ href, label, active = false }: { href: string; label: string; active?: boolean }) {
   return (
     <a
       href={href}
       className="group relative text-[15px] font-body font-normal text-brand-white hover:text-brand-accent-light transition-colors duration-200 px-[7px] py-[4px]"
+      aria-current={active ? 'page' : undefined}
     >
       {label}
-      {/* Animated underline */}
+      {/* Underline: always visible when active, animated on hover otherwise */}
       <span
-        className="absolute -bottom-0.5 left-[7px] right-[7px] h-px w-0 group-hover:w-[calc(100%-14px)] transition-all duration-300 rounded-full"
-        style={{ background: 'var(--color-brand-accent-light)' }}
+        className={[
+          'absolute -bottom-0.5 left-[7px] h-px rounded-full transition-all duration-300',
+          active
+            ? 'w-[calc(100%-14px)]'
+            : 'w-0 group-hover:w-[calc(100%-14px)]',
+        ].join(' ')}
+        style={{ background: 'var(--color-brand-accent)' }}
         aria-hidden="true"
       />
     </a>
