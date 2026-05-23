@@ -1,21 +1,95 @@
 import { motion } from 'framer-motion'
+import {
+  TrendingUp, Atom, Bot, Headphones,
+  Sparkles, PenTool, Code2,
+} from 'lucide-react'
 import { siteConfig } from '@/config/site.config'
 import { Button } from '@/components/ui/Button'
 import { FadeIn } from '@/components/motion/FadeIn'
+import { BackgroundStars } from '@/components/hero/BackgroundStars'
+import { CrystalT } from '@/components/hero/CrystalT'
+import { OrbitBubble } from '@/components/hero/OrbitBubble'
 
 export interface HeroSectionProps {
   data?: typeof siteConfig.hero
 }
 
-/**
- * Parses the [accent] convention from a headline line.
- * "at [TruS]" → [{ text: 'at ', accent: false }, { text: 'TruS', accent: true }]
- */
-function parseHeadlineLine(line: string): Array<{ text: string; accent: boolean }> {
+// ─── Orbit-system dimensions ─────────────────────────────────────────────────
+// T is 380×430 px; center it at (350, 300) inside a 700×600 canvas.
+const OS_W = 700
+const OS_H = 600
+const T_CX = 350   // T visual center X inside orbit container
+const T_CY = 300   // T visual center Y inside orbit container
+
+/** Orbit ring — rotating SVG ellipse with glow */
+function OrbitRing({
+  rx, ry, tiltDeg, duration, reverse = false, opacity = 0.65,
+}: {
+  rx: number; ry: number; tiltDeg: number
+  duration: number; reverse?: boolean; opacity?: number
+}) {
+  return (
+    <motion.div
+      className="absolute inset-0 pointer-events-none"
+      animate={{ rotate: reverse ? -360 : 360 }}
+      transition={{ duration, repeat: Infinity, ease: 'linear' }}
+      style={{ transformOrigin: `${T_CX}px ${T_CY}px` }}
+    >
+      <svg
+        viewBox={`0 0 ${OS_W} ${OS_H}`}
+        className="absolute inset-0 w-full h-full overflow-visible"
+        style={{ opacity }}
+      >
+        {/* Wide blurred glow */}
+        <ellipse
+          cx={T_CX} cy={T_CY} rx={rx} ry={ry}
+          fill="none"
+          stroke="rgba(195,80,255,0.50)"
+          strokeWidth="4"
+          transform={`rotate(${tiltDeg},${T_CX},${T_CY})`}
+          style={{ filter: 'blur(3px)' }}
+        />
+        {/* Sharp crisp line */}
+        <ellipse
+          cx={T_CX} cy={T_CY} rx={rx} ry={ry}
+          fill="none"
+          stroke="rgba(220,110,255,0.75)"
+          strokeWidth="1"
+          strokeDasharray="8 5"
+          transform={`rotate(${tiltDeg},${T_CX},${T_CY})`}
+        />
+      </svg>
+    </motion.div>
+  )
+}
+
+/** Icon wrapper used inside each OrbitBubble */
+function BubbleIcon({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="text-white" style={{ filter: 'drop-shadow(0 0 6px rgba(210,130,255,0.9))' }}>
+      {children}
+    </span>
+  )
+}
+
+// ─── Service bubbles ──────────────────────────────────────────────────────────
+// Positions are (top%, left%) of the orbit-system container.
+// Each bubble is offset by translate(-50%,-50%) so the disc centre sits on the coord.
+const BUBBLES = [
+  { label: 'SEO',     icon: <BubbleIcon><TrendingUp size={22} /></BubbleIcon>, top: '17%', left: '14%', delay: 0   },
+  { label: 'REACT',   icon: <BubbleIcon><Atom       size={22} /></BubbleIcon>, top:  '2%', left: '77%', delay: 1   },
+  { label: 'AGENT',   icon: <BubbleIcon><Bot        size={22} /></BubbleIcon>, top: '34%', left: '86%', delay: 2   },
+  { label: 'ASSIST',  icon: <BubbleIcon><Headphones size={22} /></BubbleIcon>, top: '61%', left: '83%', delay: 3   },
+  { label: 'AI',      icon: <BubbleIcon><Sparkles   size={22} /></BubbleIcon>, top: '76%', left: '68%', delay: 4   },
+  { label: 'UI/UX',   icon: <BubbleIcon><PenTool    size={22} /></BubbleIcon>, top: '74%', left: '22%', delay: 5   },
+  { label: 'WEB DEV', icon: <BubbleIcon><Code2      size={22} /></BubbleIcon>, top: '44%', left:  '4%', delay: 6   },
+] as const
+
+// ─── Parsed headline helper ───────────────────────────────────────────────────
+function parseHeadline(line: string) {
   const parts: Array<{ text: string; accent: boolean }> = []
   const re = /\[([^\]]+)\]/g
-  let last = 0
-  let match: RegExpExecArray | null
+  let last = 0, match: RegExpExecArray | null
   while ((match = re.exec(line)) !== null) {
     if (match.index > last) parts.push({ text: line.slice(last, match.index), accent: false })
     parts.push({ text: match[1], accent: true })
@@ -25,46 +99,57 @@ function parseHeadlineLine(line: string): Array<{ text: string; accent: boolean 
   return parts
 }
 
+// ─── HeroSection ─────────────────────────────────────────────────────────────
 export function HeroSection({ data = siteConfig.hero }: HeroSectionProps) {
-  const isLastLine = (i: number) => i === data.headline.length - 1
-
   return (
     <section
-      className="relative overflow-hidden flex items-center"
+      className="relative overflow-hidden"
       style={{ minHeight: '100svh' }}
       aria-label="Hero"
     >
-      <HeroBackground />
+      {/* ── Background ── */}
+      <BackgroundStars />
 
-      <div className="relative z-10 mx-auto w-full max-w-[1200px] px-5 pt-[120px] pb-20 lg:pt-[140px]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+      {/* ── Main content grid ── */}
+      <div
+        className="relative z-10 mx-auto w-full max-w-[1200px] px-5 flex items-center"
+        style={{ minHeight: '100svh', paddingTop: '88px', paddingBottom: '80px' }}
+      >
+        <div className="grid w-full grid-cols-1 lg:grid-cols-[42%_58%] items-center gap-4">
 
-          {/* ── Left: copy ────────────────────────────────────────── */}
+          {/* ═══════════════════════════════════════════════════════════════
+              LEFT COLUMN — copy
+          ══════════════════════════════════════════════════════════════════ */}
           <div className="flex flex-col gap-6 lg:gap-7">
 
-            {/* Headline — DM Sans, one h1, per-line FadeIn via stagger */}
+            {/* Headline */}
             <h1 className="flex flex-col gap-1">
               {data.headline.map((line, i) => {
-                const segments = parseHeadlineLine(line as string)
-                const isLast   = isLastLine(i)
+                const segs = parseHeadline(line as string)
+                const isLast = i === data.headline.length - 1
                 return (
-                  <FadeIn key={line} delay={0.15 + i * 0.18} direction="up">
+                  <FadeIn key={line} delay={0.12 + i * 0.16} direction="up">
                     <span
-                      className="block font-hero font-normal leading-[1.1] tracking-tight text-brand-white"
-                      style={{ fontSize: 'clamp(2rem, 3.3vw, 3rem)' }}
+                      className="block font-hero font-normal leading-[1.12] tracking-tight"
+                      style={{ fontSize: 'clamp(2.1rem, 3.4vw, 3.1rem)' }}
                     >
-                      {segments.map((seg) =>
-                        seg.accent
-                          ? (
-                            <span
-                              key={seg.text}
-                              className="font-bold"
-                              style={{ color: 'var(--color-brand-accent)' }}
-                            >
-                              {seg.text}
-                            </span>
-                          )
-                          : <span key={seg.text}>{seg.text}</span>
+                      {segs.map((seg) =>
+                        seg.accent ? (
+                          <span
+                            key={seg.text}
+                            className="font-bold"
+                            style={{
+                              color: 'var(--color-brand-accent)',
+                              textShadow: '0 0 30px rgba(135,93,217,0.7)',
+                            }}
+                          >
+                            {seg.text}
+                          </span>
+                        ) : (
+                          <span key={seg.text} className="text-brand-white">
+                            {seg.text}
+                          </span>
+                        )
                       )}
                       {isLast && <CursorBlink />}
                     </span>
@@ -74,26 +159,17 @@ export function HeroSection({ data = siteConfig.hero }: HeroSectionProps) {
             </h1>
 
             {/* Subtitle */}
-            <FadeIn delay={0.55} direction="up">
+            <FadeIn delay={0.52} direction="up">
               <p
                 className="font-body font-normal text-brand-muted leading-relaxed"
-                style={{ fontSize: '1.25rem', maxWidth: '463px' }}
+                style={{ fontSize: '1.15rem', maxWidth: '440px' }}
               >
                 {data.body}
               </p>
             </FadeIn>
 
-            {/* CTAs */}
-            <FadeIn delay={0.7} direction="up" className="flex flex-wrap gap-3">
-              {/* Browse Templates — gradient */}
-              <Button
-                variant="gradient"
-                href={data.cta.primary.href}
-                className="h-[44px] w-[207px]"
-              >
-                {data.cta.primary.label}
-              </Button>
-              {/* Why TruS — ghost with white border */}
+            {/* CTAs — Why TruS left, Browse Templates right (matches reference) */}
+            <FadeIn delay={0.68} direction="up" className="flex flex-wrap gap-3">
               <Button
                 variant="ghost"
                 href={data.cta.secondary.href}
@@ -101,70 +177,86 @@ export function HeroSection({ data = siteConfig.hero }: HeroSectionProps) {
               >
                 {data.cta.secondary.label}
               </Button>
+              <Button
+                variant="gradient"
+                href={data.cta.primary.href}
+                className="h-[44px] w-[207px]"
+              >
+                {data.cta.primary.label}
+              </Button>
             </FadeIn>
 
-            {/* We ◉ READY-MADE TEMPLATES */}
-            <FadeIn delay={0.85} direction="up" className="flex items-center gap-[10px]">
-              <RecordIcon />
-              <span className="font-body font-normal text-[12px] tracking-widest uppercase text-brand-white">
-                {data.badgePrefix}
-              </span>
-              <span className="font-body font-normal text-[12px] tracking-widest uppercase text-brand-white opacity-60">
-                {data.badge}
-              </span>
-            </FadeIn>
           </div>
 
-          {/* ── Right: large TRUS typography ──────────────────────── */}
-          <div className="hidden lg:flex items-center justify-center relative overflow-hidden">
-            <FadeIn delay={0.3} direction="right">
-              <TrusTypography />
-            </FadeIn>
+          {/* ═══════════════════════════════════════════════════════════════
+              RIGHT COLUMN — Crystal T + orbit system
+          ══════════════════════════════════════════════════════════════════ */}
+          <div className="hidden lg:flex items-center justify-center">
+            <OrbitSystem />
           </div>
 
         </div>
       </div>
+
+      {/* ── Bottom label ── */}
+      <BottomLabel badge={data.badge} prefix={data.badgePrefix} />
     </section>
   )
 }
 
-// ─── TrusTypography ──────────────────────────────────────────────────────────
-// Each letter has its own span with data-letter + class for future scroll effects.
-// "T" (hero-letter-t) is specifically isolated for the planned scroll-detach animation.
+// ─── OrbitSystem ─────────────────────────────────────────────────────────────
+function OrbitSystem() {
+  // T is 380×430; position so its visual centre lands at (T_CX, T_CY)
+  const tLeft = T_CX - 380 / 2  // 160
+  const tTop  = T_CY - 430 / 2  // 85
 
-function TrusTypography() {
   return (
     <div
-      className="relative flex items-center justify-center select-none"
-      aria-hidden="true"
+      className="relative"
+      style={{ width: `${OS_W}px`, height: `${OS_H}px`, overflow: 'visible' }}
     >
+      {/* Orbit rings (behind T) */}
+      <OrbitRing rx={330} ry={90}  tiltDeg={-18} duration={58} opacity={0.70} />
+      <OrbitRing rx={258} ry={70}  tiltDeg={ 24} duration={42} reverse opacity={0.55} />
+      <OrbitRing rx={195} ry={52}  tiltDeg={  5} duration={70} opacity={0.40} />
+
+      {/* Crystal T */}
       <div
-        className="flex leading-none"
-        style={{
-          fontFamily:    'var(--font-hero)',
-          fontWeight:    700,
-          fontSize:      'clamp(130px, 13vw, 200px)',
-          letterSpacing: '-0.04em',
-          color:         'rgba(255, 255, 255, 0.07)',
-          textShadow:    '0 0 120px rgba(135, 93, 217, 0.45)',
-        }}
+        className="absolute"
+        style={{ left: tLeft, top: tTop, width: '380px' }}
       >
-        <span data-letter="T" className="hero-letter hero-letter-t">T</span>
-        <span data-letter="R" className="hero-letter hero-letter-r">R</span>
-        <span data-letter="U" className="hero-letter hero-letter-u">U</span>
-        <span data-letter="S" className="hero-letter hero-letter-s">S</span>
+        <CrystalT />
       </div>
+
+      {/* Service bubbles */}
+      {BUBBLES.map((b) => (
+        <OrbitBubble
+          key={b.label}
+          icon={b.icon}
+          label={b.label}
+          animDelay={b.delay}
+          style={{
+            top: b.top,
+            left: b.left,
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      ))}
     </div>
   )
 }
 
 // ─── CursorBlink ─────────────────────────────────────────────────────────────
-
 function CursorBlink() {
   return (
     <motion.span
       className="inline-block align-middle rounded-[2px] ml-1"
-      style={{ width: '3px', height: '0.82em', background: 'var(--color-brand-accent)' }}
+      style={{
+        width: '3px',
+        height: '0.82em',
+        background: 'var(--color-brand-accent)',
+        boxShadow: '0 0 8px var(--color-brand-accent)',
+      }}
       animate={{ opacity: [1, 1, 0, 0] }}
       transition={{ duration: 1, repeat: Infinity, times: [0, 0.45, 0.5, 0.95], ease: 'linear' }}
       aria-hidden="true"
@@ -172,66 +264,43 @@ function CursorBlink() {
   )
 }
 
-// ─── RecordIcon ──────────────────────────────────────────────────────────────
-// Simplified vinyl record: outer circle outline + inner dot (label hole)
-
-function RecordIcon() {
+// ─── BottomLabel ─────────────────────────────────────────────────────────────
+function BottomLabel({ badge, prefix }: { badge: string; prefix: string }) {
   return (
-    <span
-      className="inline-flex size-[18px] items-center justify-center rounded-full shrink-0"
-      style={{ border: '1.5px solid rgba(255,255,255,0.4)' }}
-      aria-hidden="true"
-    >
-      <span
-        className="size-[5px] rounded-full"
-        style={{ background: 'rgba(255,255,255,0.55)' }}
-      />
-    </span>
-  )
-}
+    <div className="absolute bottom-8 left-0 right-0 flex justify-center z-20 pointer-events-none">
+      <FadeIn delay={1.1} direction="up">
+        <div className="flex items-center gap-3">
+          <span
+            className="font-body font-medium text-white tracking-[0.22em] uppercase"
+            style={{ fontSize: '12px' }}
+          >
+            {prefix}
+          </span>
 
-// ─── HeroBackground ──────────────────────────────────────────────────────────
+          {/* Glowing dot */}
+          <span className="relative flex items-center justify-center" style={{ width: '14px', height: '14px' }}>
+            <span
+              className="absolute rounded-full"
+              style={{
+                inset: '-4px',
+                background: 'radial-gradient(circle, rgba(255,60,60,0.55) 0%, transparent 70%)',
+                filter: 'blur(3px)',
+              }}
+            />
+            <span
+              className="relative rounded-full"
+              style={{ width: '9px', height: '9px', background: '#ff3333', boxShadow: '0 0 8px rgba(255,60,60,0.9), 0 0 16px rgba(255,60,60,0.5)' }}
+            />
+          </span>
 
-function HeroBackground() {
-  return (
-    <div className="absolute inset-0 -z-10" aria-hidden="true">
-      {/* Deep dark base */}
-      <div className="absolute inset-0 bg-brand-bg" />
-
-      {/* Upper-right subtle purple gradient */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 55% 45% at 80% 10%, rgba(135,93,217,0.18) 0%, rgba(83,40,168,0.06) 50%, transparent 75%)',
-        }}
-      />
-
-      {/* Mid-right ambient glow — sits behind TRUS text */}
-      <div
-        className="absolute"
-        style={{
-          inset: 0,
-          background:
-            'radial-gradient(ellipse 45% 55% at 78% 52%, rgba(135,93,217,0.10) 0%, transparent 65%)',
-        }}
-      />
-
-      {/* Subtle grid — depth without distraction */}
-      <div
-        className="absolute inset-0 opacity-[0.15]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-          backgroundSize: '56px 56px',
-        }}
-      />
-
-      {/* Bottom vignette */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-48"
-        style={{ background: 'linear-gradient(to bottom, transparent, var(--color-brand-bg))' }}
-      />
+          <span
+            className="font-body font-medium text-white tracking-[0.22em] uppercase"
+            style={{ fontSize: '12px' }}
+          >
+            {badge}
+          </span>
+        </div>
+      </FadeIn>
     </div>
   )
 }
