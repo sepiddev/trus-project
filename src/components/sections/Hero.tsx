@@ -1,9 +1,10 @@
-import { motion } from 'framer-motion'
+import { motion, MotionValue } from 'framer-motion'
 import {
   TrendingUp, Atom, Bot, Headphones,
   Sparkles, PenTool, Code2,
 } from 'lucide-react'
 import { siteConfig } from '@/config/site.config'
+import { parseHeadline } from '@/utils/text'
 import { Button } from '@/components/ui/Button'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { BackgroundStars } from '@/components/hero/BackgroundStars'
@@ -12,6 +13,8 @@ import { OrbitBubble } from '@/components/hero/OrbitBubble'
 
 export interface HeroSectionProps {
   data?: typeof siteConfig.hero
+  /** Scroll-driven opacity for the orbit system — fades it out as T "lifts off". */
+  orbitOpacity?: MotionValue<number>
 }
 
 // ─── Orbit-system dimensions ─────────────────────────────────────────────────
@@ -85,22 +88,8 @@ const BUBBLES = [
   { label: 'WEB DEV', icon: <BubbleIcon><Code2      size={22} /></BubbleIcon>, top: '44%', left:  '4%', delay: 6   },
 ] as const
 
-// ─── Parsed headline helper ───────────────────────────────────────────────────
-function parseHeadline(line: string) {
-  const parts: Array<{ text: string; accent: boolean }> = []
-  const re = /\[([^\]]+)\]/g
-  let last = 0, match: RegExpExecArray | null
-  while ((match = re.exec(line)) !== null) {
-    if (match.index > last) parts.push({ text: line.slice(last, match.index), accent: false })
-    parts.push({ text: match[1], accent: true })
-    last = match.index + match[0].length
-  }
-  if (last < line.length) parts.push({ text: line.slice(last), accent: false })
-  return parts
-}
-
 // ─── HeroSection ─────────────────────────────────────────────────────────────
-export function HeroSection({ data = siteConfig.hero }: HeroSectionProps) {
+export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectionProps) {
   return (
     <section
       className="relative overflow-hidden"
@@ -191,9 +180,12 @@ export function HeroSection({ data = siteConfig.hero }: HeroSectionProps) {
           {/* ═══════════════════════════════════════════════════════════════
               RIGHT COLUMN — Crystal T + orbit system
           ══════════════════════════════════════════════════════════════════ */}
-          <div className="hidden lg:flex items-center justify-center">
+          <motion.div
+            className="hidden lg:flex items-center justify-center"
+            style={{ opacity: orbitOpacity }}
+          >
             <OrbitSystem />
-          </div>
+          </motion.div>
 
         </div>
       </div>

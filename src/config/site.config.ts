@@ -50,6 +50,22 @@ export const siteConfig = {
       { value: '1,200+', label: 'Happy Clients'      },
     ],
   },
+
+  about: {
+    eyebrow: 'ABOUT US',
+    headline: ['Discover More', 'About [TruS]'] as const,
+    body: [
+      'TruS is a modern digital studio specialising in premium React websites, AI integrations, and advanced motion design. We turn ambitious ideas into polished, production-ready products.',
+      'Every project we touch is built from scratch — no bloated page builders, no recycled themes. Just clean code, thoughtful UX, and meticulous attention to detail.',
+      'From solo founders to growing companies, we help our clients stand out online with websites that are as fast as they are beautiful.',
+    ] as const,
+    stats: [
+      { value: '250+',   label: 'Projects Delivered' },
+      { value: '4.9',    label: 'Client Rating'      },
+      { value: '1,000+', label: 'Happy Clients'      },
+    ] as const,
+    image: '/about-team.jpg',
+  },
 } as const
 
 export type SiteConfig = typeof siteConfig
