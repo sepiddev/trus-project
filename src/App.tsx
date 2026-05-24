@@ -25,9 +25,11 @@ export default function App() {
 
   /**
    * About section image glow intensity.
-   * Brightens the image card border as FloatingCrystalT fades out on arrival.
+   * Derived from the same MotionValue as the T's progress — guaranteed to be
+   * frame-perfectly synchronised: glow rises 0→1 over exactly the same
+   * progress window [0.72→1] that the T fades 1→0.
    */
-  const imageGlowIntensity = useTransform(scrollY, [1100, 1500], [0, 1])
+  const imageGlowIntensity = useTransform(floatingTProgress, [0.72, 1], [0, 1])
 
   return (
     <div className="bg-brand-bg min-h-screen font-body antialiased">

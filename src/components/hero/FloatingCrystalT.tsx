@@ -23,8 +23,8 @@ export function FloatingCrystalT({ scrollProgress }: FloatingCrystalTProps) {
   const x     = useTransform(scrollProgress, [0, 1], [0, 60])
   // Scale down to ~half as it approaches the About image
   const scale = useTransform(scrollProgress, [0, 1], [1, 0.48])
-  // Fade in quickly as it lifts off, linger, then fade out on arrival
-  const opacity = useTransform(scrollProgress, [0, 0.12, 0.72, 1], [0, 1, 0.9, 0])
+  // Fade in quickly as it lifts off, hold full opacity, then fade to 0 on arrival
+  const opacity = useTransform(scrollProgress, [0, 0.12, 0.72, 1], [0, 1, 1, 0])
 
   return (
     <motion.div
