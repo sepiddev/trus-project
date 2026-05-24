@@ -12,15 +12,15 @@ export interface FadeInProps {
   duration?: number
   className?: string
   /** Override the inView margin trigger. Default: '-10% 0px' */
-  margin?: string
+  margin?: "-10% 0px"
 }
 
 const offsetMap: Record<Direction, { x?: number; y?: number }> = {
-  up:    { y: 24 },
-  down:  { y: -24 },
-  left:  { x: -32 },
+  up: { y: 24 },
+  down: { y: -24 },
+  left: { x: -32 },
   right: { x: 32 },
-  none:  {},
+  none: {},
 }
 
 export function FadeIn({
@@ -45,7 +45,7 @@ export function FadeIn({
       animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, ...offset }}
       transition={{
         duration: shouldReduce ? 0 : duration,
-        delay:    shouldReduce ? 0 : delay,
+        delay: shouldReduce ? 0 : delay,
         ease: EASE_PREMIUM,
       }}
     >
