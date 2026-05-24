@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { motion, useMotionValue, MotionValue } from 'framer-motion'
+import { motion, useMotionValue, useTransform, MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { parseHeadline } from '@/utils/text'
@@ -28,6 +28,14 @@ export function AboutSection({
   // Fallback: static 0 when no scroll prop is provided (e.g. isolated render)
   const fallbackGlow = useMotionValue(0)
   const glow = imageGlowIntensity ?? fallbackGlow
+
+  // Animate the gradient border wrapper's box-shadow so the border itself
+  // visibly lights up (not just the blurred halo behind it).
+  // Both shadow strings have the same structure so Framer Motion interpolates cleanly.
+  const borderGlowShadow = useTransform(glow, [0, 1], [
+    '0 0 0px rgba(185,120,255,0), 0 0 0px rgba(135,93,217,0), 0 0 0px rgba(100,60,200,0)',
+    '0 0 30px rgba(185,120,255,0.95), 0 0 65px rgba(135,93,217,0.65), 0 0 110px rgba(100,60,200,0.35)',
+  ])
 
   return (
     <section
@@ -208,9 +216,9 @@ export function AboutSection({
                 className="absolute pointer-events-none"
                 aria-hidden="true"
                 style={{
-                  inset:      '-35px',
-                  background: 'radial-gradient(ellipse 72% 72% at 50% 50%, rgba(135,93,217,0.65) 0%, transparent 68%)',
-                  filter:     'blur(28px)',
+                  inset:      '-60px',
+                  background: 'radial-gradient(ellipse 75% 75% at 50% 50%, rgba(185,120,255,0.95) 0%, rgba(135,93,217,0.55) 38%, transparent 68%)',
+                  filter:     'blur(32px)',
                   opacity:    glow,
                 }}
               />
@@ -226,13 +234,14 @@ export function AboutSection({
                 }}
               />
 
-              {/* Gradient border wrapper (padding trick) */}
-              <div
+              {/* Gradient border wrapper — boxShadow animates from dark to bright glow */}
+              <motion.div
                 style={{
                   position:     'relative',
                   padding:       '5px',
                   background:   'linear-gradient(135deg, rgba(255,255,255,0.72) 0%, #5328A8 55%, rgba(135,93,217,0.4) 100%)',
                   borderRadius: '20px',
+                  boxShadow:    borderGlowShadow,
                 }}
               >
                 {/* Inner card */}
@@ -276,7 +285,7 @@ export function AboutSection({
                     }}
                   />
                 </div>
-              </div>
+              </motion.div>
 
             </div>
           </FadeIn>

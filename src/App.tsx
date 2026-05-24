@@ -5,29 +5,32 @@ import { AboutSection }     from '@/components/sections/AboutSection'
 import { FloatingCrystalT } from '@/components/hero/FloatingCrystalT'
 
 export default function App() {
-  // Track raw document scroll position
-  const { scrollY } = useScroll()
+  // scrollYProgress: 0 at top of page, 1 at bottom — adapts to any page height.
+  // Previously used raw scrollY [150→1500] which exceeded max scroll (~788px),
+  // so the T never actually faded and the glow never fired.
+  const { scrollYProgress } = useScroll()
 
   // ── Scroll-linked MotionValues ────────────────────────────────────────────
 
   /**
    * Hero orbit system opacity.
-   * Fades the orbit rings + static T from full visible → invisible
-   * as the user scrolls into the hero content (creating the "T lifts off" effect).
+   * Fades out in the first ~28% of total page scroll.
+   * (line that controls hero orbit fade-out)
    */
-  const heroOrbitOpacity = useTransform(scrollY, [80, 520], [1, 0])
+  const heroOrbitOpacity = useTransform(scrollYProgress, [0, 0.28], [1, 0])
 
   /**
-   * Normalised scroll progress fed to FloatingCrystalT.
-   * 0 = T at Hero position, 1 = T arrived at About image area.
+   * Normalised T journey progress: 0 = at Hero, 1 = arrived at About image.
+   * Spans 5%→90% of total page scroll so it always completes before bottom.
+   * (line that controls T scroll progress range)
    */
-  const floatingTProgress = useTransform(scrollY, [150, 1500], [0, 1])
+  const floatingTProgress = useTransform(scrollYProgress, [0.05, 0.90], [0, 1])
 
   /**
    * About section image glow intensity.
-   * Derived from the same MotionValue as the T's progress — guaranteed to be
-   * frame-perfectly synchronised: glow rises 0→1 over exactly the same
-   * progress window [0.72→1] that the T fades 1→0.
+   * Derived from floatingTProgress so it is frame-perfectly synced:
+   * rises 0→1 over the exact same window [0.72→1] that the T fades 1→0.
+   * (line that controls when image border glow activates)
    */
   const imageGlowIntensity = useTransform(floatingTProgress, [0.72, 1], [0, 1])
 
