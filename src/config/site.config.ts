@@ -66,6 +66,26 @@ export const siteConfig = {
     ] as const,
     image: '/about-team.jpg',
   },
+
+  portfolio: {
+    eyebrow: 'PORTFOLIO',
+    headline: 'EXPLORE OUR PROJECT',
+    description: [
+      'A selection of our recent work showcasing creativity,',
+      'performance, and attention to detail.',
+    ] as const,
+    seeMore: { label: 'See More', href: '#' },
+    projects: [
+      { id: 1, name: 'Arquivo',   category: 'Corporate',  accent: '#e63946', bg: '#f1f3f5' },
+      { id: 2, name: 'Avansi',    category: 'SaaS',       accent: '#4361ee', bg: '#0f172a' },
+      { id: 3, name: 'Slingshot', category: 'Product',    accent: '#06d6a0', bg: '#0d1117' },
+      { id: 4, name: 'Nexora',    category: 'E-Commerce', accent: '#9d4edd', bg: '#1a0a2e' },
+      { id: 5, name: 'DataFlow',  category: 'Dashboard',  accent: '#f72585', bg: '#10002b' },
+      { id: 6, name: 'TechVault', category: 'Web App',    accent: '#4cc9f0', bg: '#071520' },
+      { id: 7, name: 'Orbis',     category: 'Portfolio',  accent: '#ff6b6b', bg: '#1c1c1c' },
+      { id: 8, name: 'Luminary',  category: 'Agency',     accent: '#ffd166', bg: '#1a1a2e' },
+    ] as const,
+  },
 } as const
 
 export type SiteConfig = typeof siteConfig
