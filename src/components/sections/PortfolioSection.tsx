@@ -205,12 +205,13 @@ export function PortfolioSection() {
 
           {/* ── PORTFOLIO background word — z:2, behind cards ────────────── */}
           {/* ── TUNING: PORTFOLIO word vertical position ──
-                clamp(min, preferred-vh, max) — tracks viewport height.       */}
+                Sits just below Row 1's bottom edge, between the two card rows.
+                clamp(floor, preferred-vh, ceiling)                            */}
           <div
             aria-hidden="true"
             style={{
               position:      'absolute',
-              top:           'clamp(420px, 48vh, 490px)',
+              top:           'clamp(475px, 58vh, 555px)',
               left:          0,
               right:         0,
               paddingLeft:   'max(120px, calc((100vw - 1200px) / 2 + 20px))',
@@ -233,7 +234,7 @@ export function PortfolioSection() {
           <div
             style={{
               position: 'absolute',
-              top:      'clamp(244px, 28vh, 310px)',
+              top:      'clamp(260px, 30vh, 350px)',
               left:     0,
               right:    0,
               zIndex:   5,
@@ -271,7 +272,7 @@ export function PortfolioSection() {
           <div
             style={{
               position: 'absolute',
-              top:      'clamp(500px, 57vh, 590px)',
+              top:      'clamp(520px, 62vh, 640px)',
               left:     0,
               right:    0,
               zIndex:   5,
