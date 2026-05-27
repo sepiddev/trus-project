@@ -86,6 +86,33 @@ export const siteConfig = {
       { id: 8, name: 'Luminary',  category: 'Agency',     accent: '#ffd166', bg: '#1a1a2e' },
     ] as const,
   },
+
+  whyUs: {
+    eyebrow: 'WHY US',
+    headline: ['WHY THOUSANDS CHOOSE', 'OUR TEMPLATES'] as const,
+    cards: [
+      {
+        number:      '01',
+        title:       'Premium Design Quality',
+        description: 'Every template is handcrafted with meticulous attention to detail — not auto-generated or recycled.',
+      },
+      {
+        number:      '02',
+        title:       'Built for Performance',
+        description: 'Clean React code, zero bloat. Your site loads fast and scores well on every metric.',
+      },
+      {
+        number:      '03',
+        title:       'Fully Customisable',
+        description: 'Comprehensive design tokens and config files make rebranding and adapting content trivial.',
+      },
+      {
+        number:      '04',
+        title:       'You Own Everything',
+        description: 'Full source code ownership. No subscriptions, no lock-in, no hidden fees ever.',
+      },
+    ] as const,
+  },
 } as const
 
 export type SiteConfig = typeof siteConfig

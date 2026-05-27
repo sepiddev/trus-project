@@ -1,15 +1,25 @@
 interface ProjectCardProps {
   name:     string
   category: string
-  /** Accent colour used for the header stripe and label */
+  /** Accent colour used for the top edge line and label */
   accent:   string
   /** Card background colour */
   bg:       string
 }
 
 /**
- * Browser-mockup project preview card — 337×240 px.
- * Uses geometric blocks to simulate a website layout without needing real screenshots.
+ * Portfolio project card — 337 × 240 px placeholder.
+ *
+ * Intentionally minimal: every card renders identically shaped so
+ * the horizontal scroll animation reads as a uniform ribbon.
+ * Real project screenshots will replace the placeholder area later.
+ *
+ * ── TUNING: card size ──
+ *   Change `width` / `height` here.  border-radius: 6.12 px is design spec.
+ *
+ * ── TUNING: placeholder content ──
+ *   Everything inside the outer div below the outer shell div is placeholder.
+ *   Swap the inner <div> for an <img> when screenshots are ready.
  */
 export function ProjectCard({ name, category, accent, bg }: ProjectCardProps) {
   return (
@@ -21,129 +31,61 @@ export function ProjectCard({ name, category, accent, bg }: ProjectCardProps) {
         overflow:     'hidden',
         background:   bg,
         flexShrink:   0,
-        boxShadow:    '0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4)',
         position:     'relative',
+        boxShadow:    '0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4)',
       }}
     >
-      {/* Browser chrome bar */}
+      {/* ── Top accent line ── */}
       <div
         style={{
-          height:     '26px',
-          background: '#1a1a1f',
-          display:    'flex',
-          alignItems: 'center',
-          padding:    '0 10px',
-          gap:        '5px',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          position:   'absolute',
+          top:        0, left: 0, right: 0,
+          height:     '2px',
+          background: `linear-gradient(to right, ${accent}, transparent 70%)`,
+        }}
+      />
+
+      {/* ── Placeholder body — replace with <img> when screenshots are ready ── */}
+      <div
+        style={{
+          position:   'absolute',
+          inset:      0,
+          background: `radial-gradient(ellipse 75% 60% at 38% 38%, ${accent}1a 0%, transparent 65%)`,
+        }}
+      />
+
+      {/* ── Bottom label ── */}
+      <div
+        style={{
+          position:   'absolute',
+          bottom:     0, left: 0, right: 0,
+          padding:    '18px 16px 14px',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.30) 65%, transparent 100%)',
         }}
       >
-        {/* Traffic-light dots */}
-        {['#ff5f57', '#febc2e', '#28c840'].map((c) => (
-          <span key={c} style={{ width: 7, height: 7, borderRadius: '50%', background: c, flexShrink: 0 }} />
-        ))}
-        {/* Fake URL bar */}
         <div
           style={{
-            flex:         1,
-            height:       14,
-            borderRadius: 3,
-            background:   'rgba(255,255,255,0.08)',
-            margin:       '0 8px',
-          }}
-        />
-      </div>
-
-      {/* Simulated website content */}
-      <div style={{ padding: '10px 12px', height: 'calc(100% - 26px)', position: 'relative' }}>
-        {/* Header / hero stripe */}
-        <div
-          style={{
-            height:       '40px',
-            background:   accent,
-            borderRadius: '3px',
-            marginBottom: '8px',
-            display:      'flex',
-            alignItems:   'center',
-            padding:      '0 10px',
-            gap:          '6px',
+            fontSize:      '9px',
+            color:          accent,
+            fontWeight:    600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.13em',
+            marginBottom:  '3px',
+            fontFamily:    'var(--font-body)',
           }}
         >
-          <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.5)' }} />
-          <div style={{ height: 8, width: '40%', borderRadius: 3, background: 'rgba(255,255,255,0.55)' }} />
+          {category}
         </div>
-
-        {/* Content columns */}
-        <div style={{ display: 'flex', gap: '7px', marginBottom: '7px' }}>
-          {[0.45, 0.28, 0.27].map((w, i) => (
-            <div
-              key={i}
-              style={{
-                flex:         w,
-                height:       '48px',
-                borderRadius: '3px',
-                background:   i === 0
-                  ? `linear-gradient(135deg, ${accent}22 0%, ${accent}0a 100%)`
-                  : 'rgba(255,255,255,0.05)',
-                border:       i === 0 ? `1px solid ${accent}44` : '1px solid rgba(255,255,255,0.06)',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Body rows */}
-        <div style={{ display: 'flex', gap: '7px', marginBottom: '6px' }}>
-          {[0.5, 0.5].map((w, i) => (
-            <div
-              key={i}
-              style={{
-                flex:         w,
-                height:       '28px',
-                borderRadius: '3px',
-                background:   'rgba(255,255,255,0.04)',
-                border:       '1px solid rgba(255,255,255,0.05)',
-              }}
-            />
-          ))}
-        </div>
-        <div style={{ height: '14px', width: '65%', borderRadius: '3px', background: 'rgba(255,255,255,0.04)' }} />
-
-        {/* Project name overlay — bottom */}
         <div
           style={{
-            position:   'absolute',
-            bottom:     '10px',
-            left:       '12px',
-            right:      '12px',
-            padding:    '8px 10px',
-            background: 'rgba(0,0,0,0.65)',
-            borderRadius: '4px',
-            backdropFilter: 'blur(4px)',
+            fontSize:   '14px',
+            color:      '#ffffff',
+            fontWeight: 700,
+            fontFamily: 'var(--font-hero)',
+            lineHeight: 1.2,
           }}
         >
-          <div
-            style={{
-              fontSize:      '9px',
-              color:         accent,
-              fontWeight:    600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              marginBottom:  '2px',
-              fontFamily:    'var(--font-body)',
-            }}
-          >
-            {category}
-          </div>
-          <div
-            style={{
-              fontSize:   '13px',
-              color:      '#ffffff',
-              fontWeight: 700,
-              fontFamily: 'var(--font-hero)',
-              lineHeight: 1.2,
-            }}
-          >
-            {name}
-          </div>
+          {name}
         </div>
       </div>
     </div>
