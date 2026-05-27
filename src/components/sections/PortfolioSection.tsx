@@ -272,7 +272,7 @@ export function PortfolioSection() {
           <div
             style={{
               position: 'absolute',
-              top:      'clamp(520px, 62vh, 640px)',
+              top:      'min(clamp(520px, 62vh, 640px), calc(100vh - 244px))',
               left:     0,
               right:    0,
               zIndex:   5,
