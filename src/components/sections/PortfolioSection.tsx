@@ -46,11 +46,12 @@ export function PortfolioSection() {
       {/* ── Fixed Crystal T for Portfolio phase ── */}
       <PortfolioT portfolioTProgress={portfolioTProgress} />
 
-      {/* ── Scroll container — 300vh gives ~1800px of scroll travel ── */}
+      {/* ── Scroll container — 420vh gives ~2835px of scroll travel ── */}
+      {/* ── TUNING: Portfolio section height — change the vh value below ── */}
       <div
         id="portfolio"
         ref={containerRef}
-        style={{ height: '300vh', position: 'relative' }}
+        style={{ height: '420vh', position: 'relative' }}
       >
         {/* ── Sticky viewport panel ─────────────────────────────────────────── */}
         <div

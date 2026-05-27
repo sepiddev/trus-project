@@ -3,34 +3,31 @@ import { Navbar }             from '@/components/layout/Navbar'
 import { HeroSection }        from '@/components/sections/Hero'
 import { AboutSection }       from '@/components/sections/AboutSection'
 import { PortfolioSection }   from '@/components/sections/PortfolioSection'
+import { WhyUsSection }       from '@/components/sections/WhyUsSection'
 import { FloatingCrystalT }   from '@/components/hero/FloatingCrystalT'
 
 export default function App() {
-  // scrollYProgress: 0 at top of page, 1 at bottom.
+  // Raw scrollY (pixels) rather than scrollYProgress (fraction) is used here
+  // so that Hero → About animations fire at fixed pixel offsets and remain
+  // correct regardless of how many sections are added below.
   //
-  // Page height estimate (900px viewport):
-  //   Hero        ~  900px  (100svh)
-  //   About       ~  788px  (py-36 × 2 + 500px content)
-  //   Portfolio   ~ 2700px  (300vh sticky container)
-  //   ─────────────────────
-  //   Total       ~ 4388px  →  max scroll ~ 3488px
+  // Pixel anchors (900 px viewport, Hero = 100 svh = 900 px):
+  //   Hero orbit fade  : 0 → 252 px  (28 % of 900 px Hero height)
+  //   Floating T start : ~45 px       (T lifts off near top of Hero)
+  //   Floating T end   : ~800 px      (T arrives at About image centre)
   //
-  // All scroll percentages below are calculated against this total.
-  const { scrollYProgress } = useScroll()
+  // WhyUsSection and PortfolioSection each own their scroll progress via
+  // useScroll({ target: ref }) — they need no entries here.
+  const { scrollY } = useScroll()
 
   // ── Hero orbit opacity ────────────────────────────────────────────────────
-  // Fades out in the first 28% of the Hero section.
-  // 28% of 900px = 252px.  252 / 3488 ≈ 0.072.
-  // (recalibrated from [0, 0.28] which assumed old 788px max-scroll)
-  const heroOrbitOpacity = useTransform(scrollYProgress, [0, 0.072], [1, 0])
+  // Fades the orbit rings + bubbles out as the T lifts off.
+  const heroOrbitOpacity = useTransform(scrollY, [0, 252], [1, 0])
 
   // ── Floating T: Hero → About journey ─────────────────────────────────────
-  // T starts at 5% into Hero  → scrollY=45px  → scrollYProgress=0.013
-  // T arrives at About image  → scrollY≈800px → scrollYProgress=0.229
-  //   (About image center at page-y≈1294px; appears at viewport centre when
-  //    scrollY = 1294 − 26vh − 260px ≈ 800px — matches T's y offset)
-  // (recalibrated from [0.05, 0.90] which assumed old 788px max-scroll)
-  const floatingTProgress = useTransform(scrollYProgress, [0.013, 0.229], [0, 1])
+  // T lifts off at scrollY ≈ 45 px, arrives at About image at scrollY ≈ 800 px.
+  // (About image centre ≈ page-y 1294 px; viewport-centre when scrollY ≈ 800 px)
+  const floatingTProgress = useTransform(scrollY, [45, 800], [0, 1])
 
   // ── About image border glow ───────────────────────────────────────────────
   // Derived from floatingTProgress — frame-perfect sync with T fade-out.
@@ -50,6 +47,10 @@ export default function App() {
       {/* Portfolio: self-contained sticky section.
           Renders its own PortfolioT (position:fixed) internally. */}
       <PortfolioSection />
+
+      {/* Why Us: self-contained sticky section.
+          Renders its own WhyUsT (position:fixed) internally. */}
+      <WhyUsSection />
     </div>
   )
 }
