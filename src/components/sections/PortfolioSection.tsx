@@ -31,8 +31,8 @@ export function PortfolioSection() {
 
   // Cards horizontal slide (row 1 and row 2 at different rates for parallax depth)
   // Both start off-screen right, slide to off-screen left
-  const cardsRow1X = useTransform(sectionProgress, [0.05, 0.88], ['28vw', '-72vw'])
-  const cardsRow2X = useTransform(sectionProgress, [0.10, 0.92], ['44vw', '-58vw'])
+  const cardsRow1X = useTransform(sectionProgress, [0.05, 0.88], ['38vw', '-125vw'])
+  const cardsRow2X = useTransform(sectionProgress, [0.10, 0.92], ['54vw', '-120vw'])
 
   // Halo behind PORTFOLIO word — pulses with letter light-up, dims with cards exit
   const haloOpacity = useTransform(sectionProgress, [0.05, 0.35, 0.55, 0.78], [0, 0.6, 0.6, 0])
@@ -51,7 +51,7 @@ export function PortfolioSection() {
       <div
         id="portfolio"
         ref={containerRef}
-        style={{ height: '420vh', position: 'relative' }}
+        style={{ height: '400vh', position: 'relative' }}
       >
         {/* ── Sticky viewport panel ─────────────────────────────────────────── */}
         <div
@@ -141,7 +141,7 @@ export function PortfolioSection() {
 
           {/* ── Top content — z:10 above cards ───────────────────────────── */}
           <div
-            className="relative mx-auto w-full max-w-[1200px] px-5"
+            className="relative mx-auto w-full max-w-300 px-5"
             style={{ zIndex: 10, paddingTop: '100px' }}
           >
             {/* Row: label + heading + description (left) | See More (right) */}
@@ -154,7 +154,7 @@ export function PortfolioSection() {
                     fontSize:     '14px',
                     lineHeight:   '20px',
                     color:        '#9F7EE1',
-                    marginBottom: '10px',
+                    marginBottom: '0px',
                   }}
                 >
                   {siteConfig.portfolio.eyebrow}
@@ -166,7 +166,7 @@ export function PortfolioSection() {
                   style={{
                     fontSize:     '32px',
                     lineHeight:   '1.1',
-                    marginBottom: '18px',
+                    marginBottom: '5px',
                   }}
                 >
                   {siteConfig.portfolio.headline}
@@ -178,7 +178,7 @@ export function PortfolioSection() {
                   style={{ fontSize: '16px', lineHeight: '20px', color: '#BFBFBF' }}
                 >
                   {siteConfig.portfolio.description.map((line, i) => (
-                    <p key={i} style={{ margin: 0 }}>{line}</p>
+                    <p key={i} style={{ margin: 1 }}>{line}</p>
                   ))}
                 </div>
               </div>
@@ -211,7 +211,7 @@ export function PortfolioSection() {
             aria-hidden="true"
             style={{
               position:      'absolute',
-              top:           'clamp(475px, 58vh, 555px)',
+              top:           'clamp(405px, 58vh, 555px)',
               left:          0,
               right:         0,
               paddingLeft:   'max(120px, calc((100vw - 1200px) / 2 + 20px))',
@@ -234,7 +234,7 @@ export function PortfolioSection() {
           <div
             style={{
               position: 'absolute',
-              top:      'clamp(260px, 30vh, 350px)',
+              top:      'clamp(200px, 30vh, 350px)',
               left:     0,
               right:    0,
               zIndex:   5,
