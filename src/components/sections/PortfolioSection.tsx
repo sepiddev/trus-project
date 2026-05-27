@@ -204,11 +204,13 @@ export function PortfolioSection() {
           </div>
 
           {/* ── PORTFOLIO background word — z:2, behind cards ────────────── */}
+          {/* ── TUNING: PORTFOLIO word vertical position ──
+                clamp(min, preferred-vh, max) — tracks viewport height.       */}
           <div
             aria-hidden="true"
             style={{
               position:      'absolute',
-              top:           '479px',
+              top:           'clamp(420px, 48vh, 490px)',
               left:          0,
               right:         0,
               paddingLeft:   'max(120px, calc((100vw - 1200px) / 2 + 20px))',
@@ -222,11 +224,16 @@ export function PortfolioSection() {
 
           {/* ── Project cards — z:5, above the PORTFOLIO word ────────────── */}
 
-          {/* Row 1 — starts 268px from section top per spec */}
+          {/* ── Row 1 ────────────────────────────────────────────────────────
+               ── TUNING: Row 1 vertical position ──
+                  clamp(floor, preferred-vh, ceiling)
+                  floor   = 244 px  — minimum safe distance below the title block
+                  28vh    = preferred (252 px at 900 px viewport)
+                  ceiling = 310 px  — prevents rows drifting too low on tall screens  */}
           <div
             style={{
               position: 'absolute',
-              top:      '268px',
+              top:      'clamp(244px, 28vh, 310px)',
               left:     0,
               right:    0,
               zIndex:   5,
@@ -254,11 +261,17 @@ export function PortfolioSection() {
             </motion.div>
           </div>
 
-          {/* Row 2 — starts 548px from section top per spec */}
+          {/* ── Row 2 ────────────────────────────────────────────────────────
+               ── TUNING: Row 2 vertical position ──
+                  clamp(floor, preferred-vh, ceiling)
+                  floor   = 500 px  — Row 1 floor (244) + card height (240) + 16 px gap
+                  57vh    = preferred (513 px at 900 px viewport)
+                  ceiling = 590 px  — keeps Row 2 inside 100 vh on very tall screens
+                  At 768 px: floor (500) used → Row 2 bottom = 740 px, 28 px from edge ✓  */}
           <div
             style={{
               position: 'absolute',
-              top:      '548px',
+              top:      'clamp(500px, 57vh, 590px)',
               left:     0,
               right:    0,
               zIndex:   5,
