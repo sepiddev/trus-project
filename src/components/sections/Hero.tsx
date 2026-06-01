@@ -4,11 +4,10 @@ import { parseHeadline } from '@/utils/text'
 import { Button } from '@/components/ui/Button'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { BackgroundStars } from '@/components/hero/BackgroundStars'
-import { GalaxyOrbit } from '@/components/hero/GalaxyOrbit'
 
 export interface HeroSectionProps {
   data?: typeof siteConfig.hero
-  /** Scroll-driven opacity — fades the galaxy out as the hero exits. */
+  /** Scroll-driven opacity — fades the right visual out as the hero exits. */
   orbitOpacity?: MotionValue<number>
 }
 
@@ -31,14 +30,14 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
         <div className="grid w-full grid-cols-1 lg:grid-cols-[42%_58%] items-center gap-4">
 
           {/* ═══════════════════════════════════════════════════════════════
-              LEFT COLUMN — copy
+              LEFT COLUMN — copy (unchanged)
           ══════════════════════════════════════════════════════════════════ */}
           <div className="flex flex-col gap-6 lg:gap-7">
 
             {/* Headline */}
             <h1 className="flex flex-col gap-1">
               {data.headline.map((line, i) => {
-                const segs  = parseHeadline(line as string)
+                const segs   = parseHeadline(line as string)
                 const isLast = i === data.headline.length - 1
                 return (
                   <FadeIn key={line} delay={0.12 + i * 0.16} direction="up">
@@ -102,13 +101,14 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
           </div>
 
           {/* ═══════════════════════════════════════════════════════════════
-              RIGHT COLUMN — Orbital galaxy system
+              RIGHT COLUMN — video placeholder
+              Hidden on mobile; visible on lg+ only.
           ══════════════════════════════════════════════════════════════════ */}
           <motion.div
             className="hidden lg:flex items-center justify-center"
-            style={{ opacity: orbitOpacity }}
+            style={{ opacity: orbitOpacity, x: 80 }}
           >
-            <GalaxyOrbit />
+            <HeroVideo />
           </motion.div>
 
         </div>
@@ -117,6 +117,95 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
       {/* ── Bottom label ── */}
       <BottomLabel badge={data.badge} prefix={data.badgePrefix} />
     </section>
+  )
+}
+
+// ─── HeroVideo ────────────────────────────────────────────────────────────────
+/**
+ * Temporary video placeholder — right-side Hero visual.
+ *
+ * "Floating in space" technique — three layers:
+ *
+ * 1. GLOW  — absolute div, bleeds 45 % beyond the video on every side,
+ *            completely detached from any box boundary.
+ *
+ * 2. SIZE  — video is rendered at 130 % of the column width and shifted
+ *            left by 15 % so it is centred. The extra 15 % on each side
+ *            sits in the fade zone so the active galaxy content is still
+ *            ~30 % larger than the old implementation.
+ *
+ * 3. MASK  — two intersecting linear gradients (one per axis) instead of
+ *            a single radial gradient. This gives independent, precise
+ *            control over each of the four edges with no ellipse maths:
+ *              H: transparent → black 22 % … 78 % → transparent
+ *              V: transparent → black 25 % … 75 % → transparent
+ *            Combined with mix-blend-mode: screen (dark pixels → transparent)
+ *            the edges dissolve completely — no rectangular frame.
+ */
+function HeroVideo() {
+  // Horizontal and vertical fade gradients — each fades its respective edges
+  const maskH = 'linear-gradient(to right,  transparent 0%, black 22%, black 78%, transparent 100%)'
+  const maskV = 'linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%)'
+
+  return (
+    // No maxWidth, no background, no border, no overflow:hidden.
+    // overflow:visible (default) lets the video and glow bleed naturally.
+    <div
+      style={{
+        position:      'relative',
+        width:         '100%',
+        pointerEvents: 'none',   // never block left-column clicks
+      }}
+    >
+
+      {/* Atmospheric glow — intentionally larger than the video */}
+      <div
+        aria-hidden="true"
+        style={{
+          position:   'absolute',
+          top:        '-45%',
+          left:       '-32%',
+          right:      '-32%',
+          bottom:     '-45%',
+          background:
+            'radial-gradient(ellipse 64% 64% at 52% 50%,' +
+            ' rgba(118,42,240,0.55) 0%,' +
+            ' rgba(88,18,198,0.26) 38%,' +
+            ' rgba(55,8,145,0.10) 62%,' +
+            ' transparent 80%)',
+          filter:     'blur(62px)',
+          zIndex:     0,
+        }}
+      />
+
+      {/* Video — 30 % wider than column, centred, all four edges faded */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position:  'relative',
+          zIndex:    1,
+          display:   'block',
+          // 30 % size increase: 130 % width, centred via negative left margin
+          width:              '130%',
+          marginLeft:         '-15%',
+          height:             'auto',
+          // Screen blend — makes the video's dark background pixels
+          // identical to the page background (effectively transparent)
+          mixBlendMode:       'screen',
+          // Dual-axis mask: H gradient × V gradient = precise 4-edge fade
+          WebkitMaskImage:     `${maskH}, ${maskV}`,
+          WebkitMaskComposite: 'destination-in',   // WebKit intersection
+          maskImage:           `${maskH}, ${maskV}`,
+          maskComposite:       'intersect',         // standard
+        }}
+      >
+        <source src="/hero-placeholder.mp4" type="video/mp4" />
+      </video>
+
+    </div>
   )
 }
 
@@ -164,10 +253,10 @@ function BottomLabel({ badge, prefix }: { badge: string; prefix: string }) {
             <span
               className="relative rounded-full"
               style={{
-                width:     '9px',
-                height:    '9px',
+                width:      '9px',
+                height:     '9px',
                 background: '#ff3333',
-                boxShadow: '0 0 8px rgba(255,60,60,0.9), 0 0 16px rgba(255,60,60,0.5)',
+                boxShadow:  '0 0 8px rgba(255,60,60,0.9), 0 0 16px rgba(255,60,60,0.5)',
               }}
             />
           </span>
