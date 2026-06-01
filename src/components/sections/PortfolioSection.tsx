@@ -60,7 +60,7 @@ export function PortfolioSection() {
             top:      0,
             height:   '100vh',
             overflow: 'hidden',
-            background: 'var(--color-brand-bg)',
+            background: '#ffffff',
           }}
         >
 
@@ -118,7 +118,7 @@ export function PortfolioSection() {
                 fontSize:   'clamp(240px, 30vw, 460px)',
                 fontFamily: 'var(--font-hero)',
                 fontWeight: 700,
-                color:      'rgba(255,255,255,0.025)',
+                color:      'rgba(0,0,0,0.04)',
                 lineHeight: 1,
                 userSelect: 'none',
               }}
@@ -134,7 +134,7 @@ export function PortfolioSection() {
                 left:       0,
                 right:      0,
                 height:     '80px',
-                background: 'linear-gradient(to bottom, var(--color-brand-bg), transparent)',
+                background: 'linear-gradient(to bottom, #ffffff, transparent)',
               }}
             />
           </div>
@@ -162,11 +162,12 @@ export function PortfolioSection() {
 
                 {/* Heading */}
                 <h2
-                  className="font-hero font-bold uppercase text-brand-white"
+                  className="font-hero font-bold uppercase"
                   style={{
                     fontSize:     '32px',
                     lineHeight:   '1.1',
                     marginBottom: '5px',
+                    color:        '#111111',
                   }}
                 >
                   {siteConfig.portfolio.headline}
@@ -175,7 +176,7 @@ export function PortfolioSection() {
                 {/* Description — two lines as specified */}
                 <div
                   className="font-body font-normal"
-                  style={{ fontSize: '16px', lineHeight: '20px', color: '#BFBFBF' }}
+                  style={{ fontSize: '16px', lineHeight: '20px', color: '#555555' }}
                 >
                   {siteConfig.portfolio.description.map((line, i) => (
                     <p key={i} style={{ margin: 1 }}>{line}</p>
