@@ -4,11 +4,10 @@ import { parseHeadline } from '@/utils/text'
 import { Button } from '@/components/ui/Button'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { BackgroundStars } from '@/components/hero/BackgroundStars'
-import { GalaxyOrbit } from '@/components/hero/GalaxyOrbit'
 
 export interface HeroSectionProps {
   data?: typeof siteConfig.hero
-  /** Scroll-driven opacity — fades the galaxy out as the hero exits. */
+  /** Scroll-driven opacity — fades the right visual out as the hero exits. */
   orbitOpacity?: MotionValue<number>
 }
 
@@ -31,14 +30,14 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
         <div className="grid w-full grid-cols-1 lg:grid-cols-[42%_58%] items-center gap-4">
 
           {/* ═══════════════════════════════════════════════════════════════
-              LEFT COLUMN — copy
+              LEFT COLUMN — copy (unchanged)
           ══════════════════════════════════════════════════════════════════ */}
           <div className="flex flex-col gap-6 lg:gap-7">
 
             {/* Headline */}
             <h1 className="flex flex-col gap-1">
               {data.headline.map((line, i) => {
-                const segs  = parseHeadline(line as string)
+                const segs   = parseHeadline(line as string)
                 const isLast = i === data.headline.length - 1
                 return (
                   <FadeIn key={line} delay={0.12 + i * 0.16} direction="up">
@@ -102,13 +101,14 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
           </div>
 
           {/* ═══════════════════════════════════════════════════════════════
-              RIGHT COLUMN — Orbital galaxy system
+              RIGHT COLUMN — video placeholder
+              Hidden on mobile; visible on lg+ only.
           ══════════════════════════════════════════════════════════════════ */}
           <motion.div
             className="hidden lg:flex items-center justify-center"
             style={{ opacity: orbitOpacity }}
           >
-            <GalaxyOrbit />
+            <HeroVideo />
           </motion.div>
 
         </div>
@@ -117,6 +117,61 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
       {/* ── Bottom label ── */}
       <BottomLabel badge={data.badge} prefix={data.badgePrefix} />
     </section>
+  )
+}
+
+// ─── HeroVideo ────────────────────────────────────────────────────────────────
+/**
+ * Temporary video placeholder — right-side Hero visual.
+ *
+ * Blending strategy:
+ *   1. mask-image applied directly to <video> — fades all edges to
+ *      transparent so the video dissolves into the dark background.
+ *   2. mix-blend-mode: screen — makes near-black video pixels invisible
+ *      against the dark page, eliminating any residual hard border.
+ *   3. Purple glow div behind the video adds atmospheric depth.
+ */
+function HeroVideo() {
+  return (
+    <div className="relative w-full" style={{ maxWidth: '580px' }}>
+
+      {/* Purple atmosphere glow — behind the video */}
+      <div
+        aria-hidden="true"
+        style={{
+          position:      'absolute',
+          inset:         '-18%',
+          borderRadius:  '50%',
+          background:    'radial-gradient(ellipse 80% 80% at 50% 50%, rgba(109,40,217,0.42) 0%, rgba(75,15,170,0.22) 42%, transparent 70%)',
+          filter:        'blur(42px)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Video — mask dissolves all four edges, screen blend removes black */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position:    'relative',
+          width:       '100%',
+          height:      'auto',
+          display:     'block',
+          mixBlendMode:'screen',
+          // Multi-stop radial mask: full opacity in the centre,
+          // gradual fade starting at ~40%, transparent by ~90%.
+          WebkitMaskImage:
+            'radial-gradient(ellipse 88% 88% at 50% 50%, black 30%, rgba(0,0,0,0.85) 48%, rgba(0,0,0,0.45) 65%, rgba(0,0,0,0.1) 80%, transparent 92%)',
+          maskImage:
+            'radial-gradient(ellipse 88% 88% at 50% 50%, black 30%, rgba(0,0,0,0.85) 48%, rgba(0,0,0,0.45) 65%, rgba(0,0,0,0.1) 80%, transparent 92%)',
+        }}
+      >
+        <source src="/hero-placeholder.mp4" type="video/mp4" />
+      </video>
+
+    </div>
   )
 }
 
@@ -164,10 +219,10 @@ function BottomLabel({ badge, prefix }: { badge: string; prefix: string }) {
             <span
               className="relative rounded-full"
               style={{
-                width:     '9px',
-                height:    '9px',
+                width:      '9px',
+                height:     '9px',
                 background: '#ff3333',
-                boxShadow: '0 0 8px rgba(255,60,60,0.9), 0 0 16px rgba(255,60,60,0.5)',
+                boxShadow:  '0 0 8px rgba(255,60,60,0.9), 0 0 16px rgba(255,60,60,0.5)',
               }}
             />
           </span>
