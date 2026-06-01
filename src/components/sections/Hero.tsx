@@ -106,7 +106,7 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
           ══════════════════════════════════════════════════════════════════ */}
           <motion.div
             className="hidden lg:flex items-center justify-center"
-            style={{ opacity: orbitOpacity }}
+            style={{ opacity: orbitOpacity, x: 80 }}
           >
             <HeroVideo />
           </motion.div>
