@@ -124,48 +124,82 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
 /**
  * Temporary video placeholder — right-side Hero visual.
  *
- * Blending strategy:
- *   1. mask-image applied directly to <video> — fades all edges to
- *      transparent so the video dissolves into the dark background.
- *   2. mix-blend-mode: screen — makes near-black video pixels invisible
- *      against the dark page, eliminating any residual hard border.
- *   3. Purple glow div behind the video adds atmospheric depth.
+ * "Floating in space" technique — three layers:
+ *
+ * 1. GLOW  — absolute div, bleeds 45 % beyond the video on every side,
+ *            completely detached from any box boundary.
+ *
+ * 2. SIZE  — video is rendered at 130 % of the column width and shifted
+ *            left by 15 % so it is centred. The extra 15 % on each side
+ *            sits in the fade zone so the active galaxy content is still
+ *            ~30 % larger than the old implementation.
+ *
+ * 3. MASK  — two intersecting linear gradients (one per axis) instead of
+ *            a single radial gradient. This gives independent, precise
+ *            control over each of the four edges with no ellipse maths:
+ *              H: transparent → black 22 % … 78 % → transparent
+ *              V: transparent → black 25 % … 75 % → transparent
+ *            Combined with mix-blend-mode: screen (dark pixels → transparent)
+ *            the edges dissolve completely — no rectangular frame.
  */
 function HeroVideo() {
-  return (
-    <div className="relative w-full" style={{ maxWidth: '580px' }}>
+  // Horizontal and vertical fade gradients — each fades its respective edges
+  const maskH = 'linear-gradient(to right,  transparent 0%, black 22%, black 78%, transparent 100%)'
+  const maskV = 'linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%)'
 
-      {/* Purple atmosphere glow — behind the video */}
+  return (
+    // No maxWidth, no background, no border, no overflow:hidden.
+    // overflow:visible (default) lets the video and glow bleed naturally.
+    <div
+      style={{
+        position:      'relative',
+        width:         '100%',
+        pointerEvents: 'none',   // never block left-column clicks
+      }}
+    >
+
+      {/* Atmospheric glow — intentionally larger than the video */}
       <div
         aria-hidden="true"
         style={{
-          position:      'absolute',
-          inset:         '-18%',
-          borderRadius:  '50%',
-          background:    'radial-gradient(ellipse 80% 80% at 50% 50%, rgba(109,40,217,0.42) 0%, rgba(75,15,170,0.22) 42%, transparent 70%)',
-          filter:        'blur(42px)',
-          pointerEvents: 'none',
+          position:   'absolute',
+          top:        '-45%',
+          left:       '-32%',
+          right:      '-32%',
+          bottom:     '-45%',
+          background:
+            'radial-gradient(ellipse 64% 64% at 52% 50%,' +
+            ' rgba(118,42,240,0.55) 0%,' +
+            ' rgba(88,18,198,0.26) 38%,' +
+            ' rgba(55,8,145,0.10) 62%,' +
+            ' transparent 80%)',
+          filter:     'blur(62px)',
+          zIndex:     0,
         }}
       />
 
-      {/* Video — mask dissolves all four edges, screen blend removes black */}
+      {/* Video — 30 % wider than column, centred, all four edges faded */}
       <video
         autoPlay
         loop
         muted
         playsInline
         style={{
-          position:    'relative',
-          width:       '100%',
-          height:      'auto',
-          display:     'block',
-          mixBlendMode:'screen',
-          // Multi-stop radial mask: full opacity in the centre,
-          // gradual fade starting at ~40%, transparent by ~90%.
-          WebkitMaskImage:
-            'radial-gradient(ellipse 88% 88% at 50% 50%, black 30%, rgba(0,0,0,0.85) 48%, rgba(0,0,0,0.45) 65%, rgba(0,0,0,0.1) 80%, transparent 92%)',
-          maskImage:
-            'radial-gradient(ellipse 88% 88% at 50% 50%, black 30%, rgba(0,0,0,0.85) 48%, rgba(0,0,0,0.45) 65%, rgba(0,0,0,0.1) 80%, transparent 92%)',
+          position:  'relative',
+          zIndex:    1,
+          display:   'block',
+          // 30 % size increase: 130 % width, centred via negative left margin
+          width:              '130%',
+          marginLeft:         '-15%',
+          height:             'auto',
+          // Screen blend — makes the video's dark background pixels
+          // identical to the page background (effectively transparent)
+          mixBlendMode:       'screen',
+          // Dual-axis mask: H gradient × V gradient = precise 4-edge fade
+          WebkitMaskImage:     `${maskH}, ${maskV}`,
+          WebkitMaskComposite: 'destination-in',   // WebKit intersection
+          maskImage:           `${maskH}, ${maskV}`,
+          maskComposite:       'intersect',         // standard
         }}
       >
         <source src="/hero-placeholder.mp4" type="video/mp4" />
