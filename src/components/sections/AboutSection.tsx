@@ -36,6 +36,7 @@ export function AboutSection({
     '0 0 0px rgba(185,120,255,0), 0 0 0px rgba(135,93,217,0), 0 0 0px rgba(100,60,200,0)',
     '0 0 30px rgba(185,120,255,0.95), 0 0 65px rgba(135,93,217,0.65), 0 0 110px rgba(100,60,200,0.35)',
   ])
+  const imageFilter = useTransform(glow, [0, 1], ['grayscale(100%)', 'grayscale(0%)'])
 
   return (
     <section
@@ -256,10 +257,10 @@ export function AboutSection({
                   }}
                 >
                   {/* Team image — hidden via onError when file is absent */}
-                  <img
+                  <motion.img
                     src={data.image}
                     alt="TruS team at work"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: imageFilter }}
                     loading="lazy"
                     onError={(e) => { e.currentTarget.style.display = 'none' }}
                   />
