@@ -1,9 +1,10 @@
 import { useScroll, useTransform } from 'framer-motion'
-import { Navbar }           from '@/components/layout/Navbar'
-import { HeroSection }      from '@/components/sections/Hero'
-import { AboutSection }     from '@/components/sections/AboutSection'
-import { PortfolioSection } from '@/components/sections/PortfolioSection'
-import { WhyUsSection }     from '@/components/sections/WhyUsSection'
+import { Navbar }                      from '@/components/layout/Navbar'
+import { HeroSection }                 from '@/components/sections/Hero'
+import { AboutSection }                from '@/components/sections/AboutSection'
+import { PortfolioSection }            from '@/components/sections/PortfolioSection'
+import { WhyUsSection }                from '@/components/sections/WhyUsSection'
+import { TemplateCategoriesSection }   from '@/components/sections/TemplateCategoriesSection'
 
 export default function App() {
   // Raw scrollY (pixels) so Hero / About animations fire at fixed pixel offsets
@@ -38,6 +39,9 @@ export default function App() {
       {/* Why Us: self-contained sticky section.
           Renders its own WhyUsT (position:fixed) internally. */}
       <WhyUsSection />
+
+      {/* Template Categories: entrance-triggered Crystal T + time-based cascade. */}
+      <TemplateCategoriesSection />
     </div>
   )
 }
