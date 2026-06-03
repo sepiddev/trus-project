@@ -52,7 +52,7 @@ export function TemplatesT({ active, targetX, targetY }: TemplatesTProps) {
       opacity: [0,      1,           1,           0],
       scale:   [0.56,   0.52,        0.42,        0.38],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      transition: { duration: 2.2, times: [0, 0.11, 0.54, 1.0], ease: [0.16, 1, 0.3, 1] as any },
+      transition: { duration: 2.2, times: [0, 0.11, 0.54, 0.68], ease: [0.16, 1, 0.3, 1] as any },
     })
   }, [active, targetX, targetY, controls])
 

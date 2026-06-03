@@ -51,12 +51,12 @@ export const TemplateCard = forwardRef<HTMLDivElement, TemplateCardProps>(
           }}
           animate={isActivated ? {
             boxShadow: [
-              `0 0 0px ${glowColor.replace('0.9', '0')}, 0 0 0px rgba(135,93,217,0)`,
+              '0 0 0 0px rgba(185,130,255,0), 0 0 0px rgba(135,93,217,0)',
               `0 0 0 1.5px ${glowColor}, 0 0 28px ${glowColorDim}, 0 0 60px rgba(100,60,200,0.15)`,
-              `0 0 0 1px ${glowColor.replace('0.9','0.3')}, 0 0 10px rgba(135,93,217,0.15), 0 0 0px rgba(100,60,200,0)`,
+              '0 0 0 0px rgba(185,130,255,0), 0 0 0px rgba(135,93,217,0)',
             ],
           } : {
-            boxShadow: '0 0 0 1px rgba(255,255,255,0.08)',
+            boxShadow: '0 0 0 0px rgba(185,130,255,0)',
           }}
           transition={isActivated ? { duration: 1.6, times: [0, 0.38, 1], ease: 'easeInOut' } : { duration: 0.4 }}
         />
@@ -96,6 +96,20 @@ export const TemplateCard = forwardRef<HTMLDivElement, TemplateCardProps>(
               inset:      0,
               background: 'linear-gradient(to top, rgba(4,4,10,0.88) 0%, rgba(4,4,10,0.28) 45%, transparent 70%)',
             }}
+          />
+
+          {/* ── Dark "powered off" overlay — covers image + text until card activates ── */}
+          <motion.div
+            aria-hidden="true"
+            style={{
+              position:     'absolute',
+              inset:        0,
+              background:   'rgba(4, 4, 12, 0.88)',
+              pointerEvents:'none',
+              zIndex:       5,
+            }}
+            animate={{ opacity: isActivated ? 0 : 1 }}
+            transition={{ duration: 0.85, ease: 'easeOut' }}
           />
 
           {/* Name + tag */}

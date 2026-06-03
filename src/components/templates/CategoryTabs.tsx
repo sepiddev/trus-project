@@ -21,9 +21,10 @@ export function CategoryTabs({ categories, activeCategory, onChange }: CategoryT
       role="tablist"
       aria-label="Template categories"
       style={{
-        display:    'flex',
-        flexWrap:   'wrap',
-        gap:        '10px',
+        display:         'flex',
+        flexWrap:        'wrap',
+        gap:             '10px',
+        justifyContent:  'center',
       }}
     >
       {categories.map((cat) => {

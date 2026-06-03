@@ -13,4 +13,12 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  server: {
+    port: parseInt(process.env.PORT || '5173'),
+    strictPort: false,
+  },
+  preview: {
+    port: parseInt(process.env.PORT || '4173'),
+    strictPort: false,
+  },
 })
