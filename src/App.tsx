@@ -5,6 +5,7 @@ import { AboutSection }                from '@/components/sections/AboutSection'
 import { PortfolioSection }            from '@/components/sections/PortfolioSection'
 import { WhyUsSection }                from '@/components/sections/WhyUsSection'
 import { TemplateCategoriesSection }   from '@/components/sections/TemplateCategoriesSection'
+import { ServicesSection }             from '@/components/sections/ServicesSection'
 
 export default function App() {
   // Raw scrollY (pixels) so Hero / About animations fire at fixed pixel offsets
@@ -42,6 +43,9 @@ export default function App() {
 
       {/* Template Categories: entrance-triggered Crystal T + time-based cascade. */}
       <TemplateCategoriesSection />
+
+      {/* Services: scroll-driven two-row card parallax. */}
+      <ServicesSection />
     </div>
   )
 }

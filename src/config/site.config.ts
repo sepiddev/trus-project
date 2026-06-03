@@ -114,6 +114,44 @@ export const siteConfig = {
     ] as const,
   },
 
+  services: {
+    eyebrow:     'SERVICES',
+    heading:     'OUR SERVICES',
+    description: 'We design and build modern websites that help businesses grow and stand out.',
+    items: [
+      {
+        id:          'seo',
+        title:       'SEO',
+        description: 'Improving visibility with smart search strategies and organic traffic.',
+      },
+      {
+        id:          'web-dev',
+        title:       'Web Development',
+        description: 'Building fast, responsive, and scalable websites with modern technologies.',
+      },
+      {
+        id:          'web-design',
+        title:       'Web Design',
+        description: 'Designing modern, user-friendly interfaces that improve usability and engagement.',
+      },
+      {
+        id:          'lead-maker',
+        title:       'Lead Maker',
+        description: 'Creating conversion-focused systems that help turn visitors into potential clients.',
+      },
+      {
+        id:          'ai-agent',
+        title:       'AI Agent',
+        description: 'Building intelligent assistants and automations that support business workflows.',
+      },
+      {
+        id:          'content',
+        title:       'Content Generation',
+        description: 'Creating engaging digital content that connects brands with their audience.',
+      },
+    ] as const,
+  },
+
   templateCategories: {
     eyebrow:     'EXPLORE CATEGORIES',
     heading:     'TEMPLATE CATEGORIES',
