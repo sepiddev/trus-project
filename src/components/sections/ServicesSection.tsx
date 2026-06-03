@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, type ReactNode } from 'react'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useInView } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { ServiceCard } from '@/components/services/ServiceCard'
@@ -90,15 +90,40 @@ export function ServicesSection() {
   }, [])
 
   // ── Scroll-linked card translation ────────────────────────────────────────────
-  const sectionRef = useRef<HTMLElement>(null)
+  // Manual scrollY MotionValue — driven by a passive scroll listener.
+  // This is the most reliable way to drive scroll-linked animations in FM 12.
+  // The section needs minHeight:'180vh' so the scroll range is wide enough.
+  const sectionRef   = useRef<HTMLElement>(null)
+  const scrollYMV    = useMotionValue(0)
 
-  const { scrollYProgress } = useScroll({
-    target:  sectionRef,
-    offset:  ['start end', 'end start'],
+  useEffect(() => {
+    const update = () => scrollYMV.set(window.scrollY)
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    return () => window.removeEventListener('scroll', update)
+  }, [scrollYMV])
+
+  // Helper: section-scoped progress clamped to [0.15, 0.90] active zone.
+  // Cards hold still on entry (< 0.15) then move, then hold still on exit (> 0.90).
+  const computeT = (y: number) => {
+    const el = sectionRef.current
+    if (!el) return 0
+    const start = el.offsetTop
+    const end   = el.offsetTop + el.offsetHeight - window.innerHeight
+    const raw   = Math.max(0, Math.min(1, (y - start) / Math.max(1, end - start)))
+    return Math.max(0, Math.min(1, (raw - 0.15) / 0.75))  // 0→1 inside [0.15, 0.90]
+  }
+
+  // Top row: starts right (+20vw), slides left (−80vw) — adjust multipliers here
+  const topRowX = useTransform(scrollYMV, (y) => {
+    const vw = window.innerWidth / 100
+    return (20 - computeT(y) * 100) * vw   // 20vw → -80vw in px
   })
-
-  const topRowX    = useTransform(scrollYProgress, [0, 1], [320, -320])
-  const bottomRowX = useTransform(scrollYProgress, [0, 1], [-320, 320])
+  // Bottom row: starts left (−20vw), slides right (+80vw) — adjust multipliers here
+  const bottomRowX = useTransform(scrollYMV, (y) => {
+    const vw = window.innerWidth / 100
+    return (-20 + computeT(y) * 100) * vw  // -20vw → +80vw in px
+  })
 
   // ── Shooting star — replays every time section enters viewport ────────────────
   const [starKey, setStarKey]  = useState(0)
@@ -126,6 +151,7 @@ export function ServicesSection() {
         position:      'relative',
         overflow:      'hidden',
         paddingBottom: '120px',
+        minHeight:     '180vh',   // gives scroll room for ['start start','end end'] offset
       }}
     >
       {/* ── Purple glow blob — centered background ─────────────────────────────── */}
@@ -227,7 +253,7 @@ export function ServicesSection() {
                 key={starKey}
                 initial={{ x: '-15%', opacity: 0 }}
                 animate={{ x: '105vw', opacity: [0, 1, 1, 0] }}
-                transition={{ duration: 1.6, ease: [0.4, 0, 0.6, 1], delay: 0.6 }}
+                transition={{ duration: 3.5, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.8 }}
                 style={{
                   position:     'absolute',
                   top:          '-2px',
