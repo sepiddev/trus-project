@@ -151,7 +151,7 @@ export function ServicesSection() {
         position:      'relative',
         overflow:      'hidden',
         paddingBottom: '120px',
-        minHeight:     '180vh',   // gives scroll room for ['start start','end end'] offset
+        minHeight:     '100vh',   // gives scroll room for ['start start','end end'] offset
       }}
     >
       {/* ── Purple glow blob — centered background ─────────────────────────────── */}
