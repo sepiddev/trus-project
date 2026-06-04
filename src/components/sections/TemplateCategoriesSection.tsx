@@ -56,53 +56,87 @@ export function TemplateCategoriesSection() {
   const [activatedSet, setActivatedSet]     = useState<Set<number>>(new Set())
 
   // ── Refs ─────────────────────────────────────────────────────────────────────
-  const sectionRef  = useRef<HTMLElement>(null)
-  const card5Ref    = useRef<HTMLDivElement>(null)
-  const triggeredRef = useRef(false)
+  const sectionRef    = useRef<HTMLElement>(null)
+  const card5Ref      = useRef<HTMLDivElement>(null)
+  const prevInViewRef = useRef(false)
+  const timerIds      = useRef<ReturnType<typeof setTimeout>[]>([])
 
-  // ── Intersection trigger ──────────────────────────────────────────────────────
-  // Fires once when 20 % of the section is visible.
-  const isInView = useInView(sectionRef, { once: true, amount: 0.20 })
+  // ── Intersection — fires on every entry AND exit ──────────────────────────────
+  const isInView = useInView(sectionRef, { once: false, amount: 0.20 })
 
-  // ── Cascade helper ────────────────────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────────────────────
+  const clearTimers = useCallback(() => {
+    timerIds.current.forEach(clearTimeout)
+    timerIds.current = []
+  }, [])
+
+  const resetCards = useCallback(() => {
+    setCard5Lit(false)
+    setActivatedSet(new Set())
+  }, [])
+
   const startCascade = useCallback(() => {
     CASCADE_ORDER.forEach((cardIndex, i) => {
-      setTimeout(() => {
+      const id = setTimeout(() => {
         setActivatedSet((prev) => new Set([...prev, cardIndex]))
       }, CASCADE_DELAYS[i])
+      timerIds.current.push(id)
     })
   }, [])
 
   // ── Main animation sequence ───────────────────────────────────────────────────
+  // Replays every time the section enters the viewport.
+  // On exit: clears timers and resets cards to dark so the next entry feels fresh.
   useEffect(() => {
-    if (!isInView || triggeredRef.current) return
-    triggeredRef.current = true
+    const wasInView = prevInViewRef.current
+    prevInViewRef.current = isInView
+
+    if (!isInView) {
+      // Exiting: reset so the sequence is fresh on the next entry
+      if (wasInView) {
+        clearTimers()
+        resetCards()
+        setTState({ active: false, targetX: 0, targetY: 0 })
+      }
+      return
+    }
+
+    if (wasInView) return  // still in view (e.g. re-render) — don't restart
+
+    // Entering: full sequence
+    clearTimers()
+    resetCards()
 
     const el = card5Ref.current
     if (!el) return
 
     const rect = el.getBoundingClientRect()
-    setTState({
-      active:  true,
-      targetX: rect.left + rect.width  / 2,
-      targetY: rect.top  + rect.height / 2,
-    })
+    const tx = rect.left + rect.width  / 2
+    const ty = rect.top  + rect.height / 2
 
-    // Card #5 lights up when T arrives
-    const t1 = setTimeout(() => setCard5Lit(true), T_ARRIVAL_MS)
+    // Reset T to hidden first, then activate — ensures animation replays every time
+    setTState({ active: false, targetX: 0, targetY: 0 })
+    const t0 = setTimeout(() => setTState({ active: true, targetX: tx, targetY: ty }), 50)
+    const t1 = setTimeout(() => setCard5Lit(true), 50 + T_ARRIVAL_MS)
+    const t2 = setTimeout(() => startCascade(), 50 + CASCADE_START)
+    timerIds.current.push(t0, t1, t2)
 
-    // Cascade begins after card #5 glow establishes
-    const t2 = setTimeout(() => startCascade(), CASCADE_START)
-
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [isInView, startCascade])
+    return () => {
+      clearTimeout(t0); clearTimeout(t1); clearTimeout(t2)
+    }
+  }, [isInView, clearTimers, resetCards, startCascade])
 
   // ── Tab switch ────────────────────────────────────────────────────────────────
-  // Reset activations so new cards feel fresh. T animation does NOT replay.
+  // Resets cards and re-runs the lighting cascade (without T replay).
   function handleCategoryChange(cat: string) {
+    clearTimers()
+    resetCards()
     setActiveCategory(cat as Category)
-    setCard5Lit(false)
-    setActivatedSet(new Set())
+
+    // Brief pause so the dark reset is visible before the sequence starts
+    const t1 = setTimeout(() => setCard5Lit(true), 350)
+    const t2 = setTimeout(() => startCascade(), 350 + 480)
+    timerIds.current.push(t1, t2)
   }
 
   const currentTemplates =
