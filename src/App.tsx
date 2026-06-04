@@ -7,6 +7,7 @@ import { WhyUsSection }                from '@/components/sections/WhyUsSection'
 import { TemplateCategoriesSection }   from '@/components/sections/TemplateCategoriesSection'
 import { ServicesSection }             from '@/components/sections/ServicesSection'
 import { TeamSection }                from '@/components/sections/TeamSection'
+import { TestimonialsSection }       from '@/components/sections/TestimonialsSection'
 
 export default function App() {
   // Raw scrollY (pixels) so Hero / About animations fire at fixed pixel offsets
@@ -50,6 +51,9 @@ export default function App() {
 
       {/* Team: editorial grid with grayscale→colour hover + animated info panel. */}
       <TeamSection />
+
+      {/* Testimonials: sticky 350vh section — globe fades out as cards rise. */}
+      <TestimonialsSection />
     </div>
   )
 }
