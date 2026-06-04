@@ -5,14 +5,14 @@ import { siteConfig } from '@/config/site.config'
 import { TestimonialCard } from '@/components/testimonials/TestimonialCard'
 
 // ── Card layout config (desktop) ──────────────────────────────────────────────
-// Each entry: resting left/top position, and the [start, end] progress window
-// during which the card travels from +110vh below its top to its resting top.
+// Staggered 5-card composition: upper-left, upper-right, center, lower-right, lower-left
+// Cards are intentionally spaced so they feel like floating elements, not a cluster.
 const CARD_LAYOUT = [
-  { left: '5%',  top: '38vh', inputRange: [0.06, 0.40] as [number, number] },
-  { left: '55%', top: '28vh', inputRange: [0.10, 0.44] as [number, number] },
-  { left: '30%', top: '52vh', inputRange: [0.14, 0.48] as [number, number] },
-  { left: '55%', top: '56vh', inputRange: [0.18, 0.52] as [number, number] },
-  { left: '5%',  top: '68vh', inputRange: [0.22, 0.56] as [number, number] },
+  { left: '3%',  top: '10vh', inputRange: [0.06, 0.40] as [number, number] },  // upper left
+  { left: '58%', top: '8vh',  inputRange: [0.10, 0.44] as [number, number] },  // upper right
+  { left: '37%', top: '40vh', inputRange: [0.14, 0.48] as [number, number] },  // center
+  { left: '58%', top: '65vh', inputRange: [0.18, 0.52] as [number, number] },  // lower right
+  { left: '3%',  top: '63vh', inputRange: [0.22, 0.56] as [number, number] },  // lower left
 ] as const
 
 // ── Sparse stars (module-level, no re-render churn) ───────────────────────────
@@ -269,19 +269,17 @@ export function TestimonialsSection() {
             }}
           />
 
-          {/* Globe video — clipped to circle, white glow suppressed */}
+          {/* Globe video — black bg, blends naturally into the dark background */}
           <div
             aria-hidden="true"
             style={{
-              position:     'absolute',
-              top:          '50%',
-              left:         '50%',
-              transform:    'translate(-50%, -50%)',
-              width:        'clamp(400px, 65vw, 720px)',
-              height:       'clamp(400px, 65vw, 720px)',
-              zIndex:       1,
-              overflow:     'hidden',
-              borderRadius: '50%',
+              position:  'absolute',
+              top:       '50%',
+              left:      '50%',
+              transform: 'translate(-50%, -50%)',
+              width:     'clamp(480px, 72vw, 820px)',
+              height:    'clamp(480px, 72vw, 820px)',
+              zIndex:    1,
             }}
           >
             <video
@@ -295,25 +293,17 @@ export function TestimonialsSection() {
                 height:    '100%',
                 objectFit: 'cover',
                 display:   'block',
-                opacity:   0.65,
+                opacity:   0.90,
               }}
             />
 
-            {/* Dark purple overlay — sits directly on the video, kills white brightness */}
+            {/* Subtle edge fade — blends globe into the black background */}
             <div
               style={{
                 position:   'absolute',
                 inset:      0,
-                background: 'rgba(4, 2, 18, 0.52)',
-              }}
-            />
-
-            {/* Edge vignette — slight dark tint at centre, solid at edges */}
-            <div
-              style={{
-                position:   'absolute',
-                inset:      0,
-                background: 'radial-gradient(ellipse 65% 65% at 50% 50%, rgba(4,2,18,0.12) 25%, rgba(6,4,20,0.80) 72%, rgba(5,5,14,1.00) 100%)',
+                background: 'radial-gradient(ellipse 58% 58% at 50% 50%, transparent 52%, rgba(7,7,13,0.55) 75%, rgba(7,7,13,1.00) 100%)',
+                pointerEvents: 'none',
               }}
             />
           </div>
