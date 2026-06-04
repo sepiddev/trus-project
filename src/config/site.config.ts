@@ -117,9 +117,9 @@ export const siteConfig = {
   team: {
     eyebrow: 'MEET OUR TEAM',
     heading: [
-      'Meet the expert strategists',
-      'and creative thinkers',
-      'driving measurable growth',
+      'Meet the expert strategists and',
+      'creative thinkers driving',
+      'measurable growth',
     ] as const,
     members: [
       {
