@@ -114,6 +114,49 @@ export const siteConfig = {
     ] as const,
   },
 
+  team: {
+    eyebrow: 'MEET OUR TEAM',
+    heading: [
+      'Meet the expert strategists',
+      'and creative thinkers',
+      'driving measurable growth',
+    ] as const,
+    members: [
+      {
+        id:          'sara',
+        name:        'Sara Ahmadi',
+        role:        'UI/UX Designer',
+        description: 'Designing intuitive and engaging experiences focused on clarity, usability, and modern interaction.',
+        image:       'https://picsum.photos/seed/member-sara/400/480',
+        socials:     { instagram: '#', twitter: '#', linkedin: '#' },
+      },
+      {
+        id:          'daniel',
+        name:        'Daniel Weber',
+        role:        'Web Developer',
+        description: 'Building scalable front-end systems with clean architecture and performance-focused development.',
+        image:       'https://picsum.photos/seed/member-daniel/400/480',
+        socials:     { instagram: '#', twitter: '#', linkedin: '#' },
+      },
+      {
+        id:          'lina',
+        name:        'Lina Farhadi',
+        role:        'Brand Strategist',
+        description: 'Shaping digital identities that help businesses communicate clearly and grow with confidence.',
+        image:       'https://picsum.photos/seed/member-lina/400/480',
+        socials:     { instagram: '#', twitter: '#', linkedin: '#' },
+      },
+      {
+        id:          'nina',
+        name:        'Nina Roberts',
+        role:        'Content Lead',
+        description: 'Creating meaningful content systems that connect brands with their audience effectively.',
+        image:       'https://picsum.photos/seed/member-nina/400/480',
+        socials:     { instagram: '#', twitter: '#', linkedin: '#' },
+      },
+    ] as const,
+  },
+
   services: {
     eyebrow:     'SERVICES',
     heading:     'OUR SERVICES',

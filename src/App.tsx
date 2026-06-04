@@ -6,6 +6,7 @@ import { PortfolioSection }            from '@/components/sections/PortfolioSect
 import { WhyUsSection }                from '@/components/sections/WhyUsSection'
 import { TemplateCategoriesSection }   from '@/components/sections/TemplateCategoriesSection'
 import { ServicesSection }             from '@/components/sections/ServicesSection'
+import { TeamSection }                from '@/components/sections/TeamSection'
 
 export default function App() {
   // Raw scrollY (pixels) so Hero / About animations fire at fixed pixel offsets
@@ -46,6 +47,9 @@ export default function App() {
 
       {/* Services: scroll-driven two-row card parallax. */}
       <ServicesSection />
+
+      {/* Team: editorial grid with grayscale→colour hover + animated info panel. */}
+      <TeamSection />
     </div>
   )
 }

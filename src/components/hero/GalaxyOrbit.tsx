@@ -22,18 +22,11 @@
  */
 
 import { motion, useTime, useTransform, MotionValue } from 'framer-motion'
-import {
-  Search,
-  Code2,
-  Atom,
-  Bot,
-  Cog,
-  Layers,
-  TrendingUp,
-  Server,
-  GitMerge,
-  Zap,
-} from 'lucide-react'
+// lucide-react not installed — this component is orphaned and never rendered.
+// Stubbed so the build doesn't fail on the unused file.
+const _noop = () => null
+const Search = _noop, Code2 = _noop, Atom = _noop, Bot = _noop, Cog = _noop
+const Layers = _noop, TrendingUp = _noop, Server = _noop, GitMerge = _noop, Zap = _noop
 
 // ─── Canvas ────────────────────────────────────────────────────────────────────
 const W  = 580
