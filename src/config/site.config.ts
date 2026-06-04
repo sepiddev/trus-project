@@ -264,6 +264,46 @@ export const siteConfig = {
       ],
     } as const,
   },
+  testimonials: {
+    eyebrow:  'TESTIMONIALS',
+    heading:  'CUSTOMER SUCCESS STORIES',
+    subtitle: [
+      "Trusted by forward-thinking businesses worldwide, we've helped",
+      'teams unlock growth and build lasting impact.',
+    ] as const,
+    items: [
+      {
+        name:   'Sarah Mitchell',
+        role:   'Marketing Director, Lumora Health',
+        quote:  'Altero transformed the way we approach strategy. Their insights were sharp, actionable, and truly accelerated our growth.',
+        avatar: 'https://picsum.photos/seed/tmember-sarah/64/64',
+      },
+      {
+        name:   'Arjun Mehta',
+        role:   'Software Developer',
+        quote:  'The team brought clarity to complex challenges and delivered measurable results. Working with them felt like an extension of our own team.',
+        avatar: 'https://picsum.photos/seed/tmember-arjun/64/64',
+      },
+      {
+        name:   'Emily Zhao',
+        role:   'Head of Operations, VitaHealth',
+        quote:  'Our collaboration with Altero led to a 35% improvement in efficiency. Their process was seamless and deeply data-driven.',
+        avatar: 'https://picsum.photos/seed/tmember-emily/64/64',
+      },
+      {
+        name:   'Daniel Reyes',
+        role:   'CEO, NovaTech Solutions',
+        quote:  'Professional, insightful, and results-oriented. Altero helped us scale smarter and operate more efficiently.',
+        avatar: 'https://picsum.photos/seed/tmember-daniel/64/64',
+      },
+      {
+        name:   'Julie Reed',
+        role:   'Founder, Lumora Health',
+        quote:  'Working with Altero felt effortless. They understood our challenges quickly and provided actionable solutions that worked.',
+        avatar: 'https://picsum.photos/seed/tmember-julie/64/64',
+      },
+    ] as const,
+  },
 } as const
 
 export type SiteConfig = typeof siteConfig
