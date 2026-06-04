@@ -50,10 +50,25 @@ function AnimatedCard({ index, scrollYMV, containerRef, isDesktop, children }: A
   const midPt   = rs + (re - rs) * 0.4
   const prog    = makeProgressFn(containerRef)
 
-  // y: slides from +110vh (below resting) to 0 (at resting)
+  // y: enter from +150vh → pass through composition (y=0) → exit to -130vh
+  // Cards don't settle — they flow continuously upward through the scene.
+  const EXIT_START = 0.57  // all cards begin exiting together
+  const EXIT_END   = 0.94  // all cards fully off-screen top
   const yMV = useTransform(scrollYMV, (y) => {
-    const t = Math.max(0, Math.min(1, (prog(y) - rs) / (re - rs)))
-    return (1 - t) * (110 * window.innerHeight / 100)
+    const p  = prog(y)
+    const vh = window.innerHeight
+    if (p <= re) {
+      // Enter phase: +150vh → 0
+      const t = Math.max(0, Math.min(1, (p - rs) / (re - rs)))
+      return (1 - t) * (1.5 * vh)
+    }
+    if (p >= EXIT_START) {
+      // Exit phase: 0 → -130vh (clears even the lowest card at top:68vh)
+      const t = Math.max(0, Math.min(1, (p - EXIT_START) / (EXIT_END - EXIT_START)))
+      return -t * (1.3 * vh)
+    }
+    // Brief composition hold between last card entering (0.56) and exit start (0.57)
+    return 0
   })
 
   // opacity: fades in during the first 40% of its travel window
@@ -90,8 +105,20 @@ function MobileStack({ items, scrollYMV, containerRef }: MobileStackProps) {
   const prog = makeProgressFn(containerRef)
 
   const yMV = useTransform(scrollYMV, (y) => {
-    const t = Math.max(0, Math.min(1, (prog(y) - 0.05) / (0.65 - 0.05)))
-    return (1 - t) * (80 * window.innerHeight / 100)
+    const p  = prog(y)
+    const vh = window.innerHeight
+    if (p <= 0.60) {
+      // Enter: +80vh → 0
+      const t = Math.max(0, Math.min(1, (p - 0.05) / (0.60 - 0.05)))
+      return (1 - t) * (0.8 * vh)
+    }
+    if (p >= 0.65) {
+      // Exit: stack top (44vh) + full stack height (~1250px) must clear the top.
+      // 2.5 * vh is enough to push even the last card above the viewport.
+      const t = Math.max(0, Math.min(1, (p - 0.65) / (0.94 - 0.65)))
+      return -t * (2.5 * vh)
+    }
+    return 0
   })
 
   const opMV = useTransform(scrollYMV, (y) => {
@@ -225,30 +252,38 @@ export function TestimonialsSection() {
             pointerEvents: 'none',
           }}
         >
-          {/* Globe video */}
+          {/* Soft purple aura — behind globe, slightly larger */}
           <div
             aria-hidden="true"
             style={{
-              position:  'absolute',
-              top:       '50%',
-              left:      '50%',
-              transform: 'translate(-50%, -50%)',
-              width:     'clamp(400px, 65vw, 720px)',
-              height:    'clamp(400px, 65vw, 720px)',
-              zIndex:    0,
+              position:      'absolute',
+              top:           '50%',
+              left:          '50%',
+              transform:     'translate(-50%, -50%)',
+              width:         'clamp(520px, 82vw, 900px)',
+              height:        'clamp(520px, 82vw, 900px)',
+              background:    'radial-gradient(ellipse 55% 55% at 50% 50%, rgba(135,93,217,0.22) 0%, rgba(83,40,168,0.09) 42%, transparent 68%)',
+              filter:        'blur(32px)',
+              zIndex:        0,
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Globe video — clipped to circle, white glow suppressed */}
+          <div
+            aria-hidden="true"
+            style={{
+              position:     'absolute',
+              top:          '50%',
+              left:         '50%',
+              transform:    'translate(-50%, -50%)',
+              width:        'clamp(400px, 65vw, 720px)',
+              height:       'clamp(400px, 65vw, 720px)',
+              zIndex:       1,
+              overflow:     'hidden',
+              borderRadius: '50%',
             }}
           >
-            {/* Vignette so text stays readable */}
-            <div
-              style={{
-                position:     'absolute',
-                inset:        0,
-                background:
-                  'radial-gradient(ellipse 65% 65% at 50% 50%, transparent 35%, rgba(7,7,13,0.70) 75%, rgba(7,7,13,0.97) 100%)',
-                zIndex:       1,
-                borderRadius: '50%',
-              }}
-            />
             <video
               src="/globe.mp4"
               autoPlay
@@ -256,12 +291,29 @@ export function TestimonialsSection() {
               muted
               playsInline
               style={{
-                width:        '100%',
-                height:       '100%',
-                objectFit:    'cover',
-                borderRadius: '50%',
-                display:      'block',
-                opacity:      0.85,
+                width:     '100%',
+                height:    '100%',
+                objectFit: 'cover',
+                display:   'block',
+                opacity:   0.65,
+              }}
+            />
+
+            {/* Dark purple overlay — sits directly on the video, kills white brightness */}
+            <div
+              style={{
+                position:   'absolute',
+                inset:      0,
+                background: 'rgba(4, 2, 18, 0.52)',
+              }}
+            />
+
+            {/* Edge vignette — slight dark tint at centre, solid at edges */}
+            <div
+              style={{
+                position:   'absolute',
+                inset:      0,
+                background: 'radial-gradient(ellipse 65% 65% at 50% 50%, rgba(4,2,18,0.12) 25%, rgba(6,4,20,0.80) 72%, rgba(5,5,14,1.00) 100%)',
               }}
             />
           </div>
