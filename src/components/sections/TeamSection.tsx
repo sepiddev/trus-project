@@ -52,16 +52,27 @@ export function TeamSection() {
   })
 
   // ── Desktop layout ────────────────────────────────────────────────────────────
+  //
+  // Diagonal staircase composition:
+  //   col →    [360px]      [1fr ≈380px]   [1fr ≈380px]
+  //   row 1:   heading      card[0]         card[1]
+  //   row 2:   card[2]      card[3]         info panel
+  //
+  // All 4 cards share identical dimensions (380px wide × 300px tall)
+  // set by the grid template — no explicit per-card width needed.
+  const CARD_H = 300
+
   const desktopLayout = (
     <div
       style={{
-        display:    'flex',
-        gap:        '40px',
-        alignItems: 'flex-start',
+        display:             'grid',
+        gridTemplateColumns: '360px 1fr 1fr',
+        gridTemplateRows:    `${CARD_H}px ${CARD_H}px`,
+        gap:                 '20px',
       }}
     >
-      {/* LEFT — eyebrow + heading */}
-      <div style={{ width: '360px', flexShrink: 0, paddingTop: '6px' }}>
+      {/* ── [0,0] Eyebrow + heading ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: '6px' }}>
         <FadeIn direction="up" delay={0.08}>
           <p
             style={{
@@ -79,13 +90,14 @@ export function TeamSection() {
           </p>
         </FadeIn>
 
-        <FadeIn direction="up" delay={0.18}>
+        <FadeIn direction="up" delay={0.16}>
           <h2
             style={{
               fontFamily: 'var(--font-hero)',
-              fontSize:   '32px',
+              // Slightly tighter size so the longest line fits the 360px column cleanly
+              fontSize:   '30px',
               fontWeight: 700,
-              lineHeight: 1.15,
+              lineHeight: 1.18,
               color:      '#FFFFFF',
               margin:     0,
               whiteSpace: 'pre-line',
@@ -96,31 +108,32 @@ export function TeamSection() {
         </FadeIn>
       </div>
 
-      {/* RIGHT — two rows of cards + info panel */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* ── [0,1] Card[0] — top row, left card ── */}
+      <FadeIn direction="up" delay={0.22}>
+        <TeamMemberCard {...cardProps(members[0])} style={{ width: '100%', height: CARD_H }} />
+      </FadeIn>
 
-        {/* Row 1: card[0] + card[1] */}
-        <FadeIn direction="up" delay={0.28}>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <TeamMemberCard {...cardProps(members[0])} style={{ flex: 1, height: 318 }} />
-            <TeamMemberCard {...cardProps(members[1])} style={{ flex: 1, height: 318 }} />
-          </div>
-        </FadeIn>
+      {/* ── [0,2] Card[1] — top row, right card ── */}
+      <FadeIn direction="up" delay={0.30}>
+        <TeamMemberCard {...cardProps(members[1])} style={{ width: '100%', height: CARD_H }} />
+      </FadeIn>
 
-        {/* Row 2: card[2] + card[3] + info panel */}
-        <FadeIn direction="up" delay={0.38}>
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'stretch' }}>
-            <TeamMemberCard {...cardProps(members[2])} style={{ width: 255, height: 275 }} />
-            <TeamMemberCard {...cardProps(members[3])} style={{ width: 255, height: 275 }} />
+      {/* ── [1,0] Card[2] — bottom row, left card ── */}
+      <FadeIn direction="up" delay={0.38}>
+        <TeamMemberCard {...cardProps(members[2])} style={{ width: '100%', height: CARD_H }} />
+      </FadeIn>
 
-            {/* Info panel fills remaining width */}
-            <div style={{ flex: 1, minHeight: 275 }}>
-              <TeamInfoPanel member={activeMember} />
-            </div>
-          </div>
-        </FadeIn>
+      {/* ── [1,1] Card[3] — bottom row, centre card ── */}
+      <FadeIn direction="up" delay={0.46}>
+        <TeamMemberCard {...cardProps(members[3])} style={{ width: '100%', height: CARD_H }} />
+      </FadeIn>
 
-      </div>
+      {/* ── [1,2] Info panel — bottom row, right ── */}
+      <FadeIn direction="up" delay={0.54}>
+        <div style={{ height: CARD_H, display: 'flex', alignItems: 'center' }}>
+          <TeamInfoPanel member={activeMember} />
+        </div>
+      </FadeIn>
     </div>
   )
 
