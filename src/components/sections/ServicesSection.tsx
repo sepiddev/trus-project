@@ -151,7 +151,7 @@ export function ServicesSection() {
         position:      'relative',
         overflow:      'hidden',
         paddingBottom: '120px',
-        minHeight:     '100vh',   // gives scroll room for ['start start','end end'] offset
+        minHeight:     '180vh',   // needs ≥180vh so computeT has a real scroll range
       }}
     >
       {/* ── Purple glow blob — centered background ─────────────────────────────── */}

@@ -6,14 +6,14 @@ import { TestimonialCard } from '@/components/testimonials/TestimonialCard'
 
 // ── Card layout config (desktop) ──────────────────────────────────────────────
 // Composition: UL | UR | Center | LL | LR
-// Vertical rows: ~6-8vh (top) · 36vh (mid) · 66-68vh (bottom)
-// Each column pair is on opposite sides so cards never overlap.
+// Left column (11%) + right column (66%) are symmetric around 50% at ~1440px.
+// inputRanges spread over a wider slice of the 500vh scroll so movement is cinematic.
 const CARD_LAYOUT = [
-  { left: '3%',  top: '7vh',  inputRange: [0.06, 0.40] as [number, number] },  // 1 upper-left
-  { left: '58%', top: '5vh',  inputRange: [0.10, 0.44] as [number, number] },  // 2 upper-right
-  { left: '37%', top: '36vh', inputRange: [0.14, 0.48] as [number, number] },  // 3 center
-  { left: '3%',  top: '66vh', inputRange: [0.18, 0.52] as [number, number] },  // 4 lower-left
-  { left: '58%', top: '68vh', inputRange: [0.22, 0.56] as [number, number] },  // 5 lower-right
+  { left: '11%', top: '7vh',  inputRange: [0.04, 0.32] as [number, number] },  // 1 upper-left
+  { left: '66%', top: '5vh',  inputRange: [0.07, 0.35] as [number, number] },  // 2 upper-right
+  { left: '45%', top: '36vh', inputRange: [0.10, 0.38] as [number, number] },  // 3 center
+  { left: '11%', top: '66vh', inputRange: [0.13, 0.41] as [number, number] },  // 4 lower-left
+  { left: '66%', top: '68vh', inputRange: [0.16, 0.44] as [number, number] },  // 5 lower-right
 ] as const
 
 // ── Sparse stars (module-level, no re-render churn) ───────────────────────────
@@ -53,8 +53,9 @@ function AnimatedCard({ index, scrollYMV, containerRef, isDesktop, children }: A
 
   // y: enter from +150vh → pass through composition (y=0) → exit to -130vh
   // Cards don't settle — they flow continuously upward through the scene.
-  const EXIT_START = 0.57  // all cards begin exiting together
-  const EXIT_END   = 0.94  // all cards fully off-screen top
+  // Section is 500vh so progress advances slowly → cinematic speed.
+  const EXIT_START = 0.54  // all cards begin exiting together
+  const EXIT_END   = 0.93  // all cards fully off-screen top
   const yMV = useTransform(scrollYMV, (y) => {
     const p  = prog(y)
     const vh = window.innerHeight
@@ -215,7 +216,7 @@ export function TestimonialsSection() {
     <div
       id="testimonials"
       ref={containerRef}
-      style={{ height: '350vh', position: 'relative' }}
+      style={{ height: '500vh', position: 'relative' }}
     >
       {/* ── Sticky viewport panel ─────────────────────────────────────────── */}
       <div
@@ -285,17 +286,18 @@ export function TestimonialsSection() {
             }}
           />
 
-          {/* Globe video — black bg, blends naturally into the dark background */}
+          {/* Globe video — blends into section background */}
           <div
             aria-hidden="true"
             style={{
-              position:  'absolute',
-              top:       '50%',
-              left:      '50%',
-              transform: 'translate(-50%, -50%)',
-              width:     'clamp(500px, 74vw, 860px)',
-              height:    'clamp(500px, 74vw, 860px)',
-              zIndex:    1,
+              position:   'absolute',
+              top:        '50%',
+              left:       '50%',
+              transform:  'translate(-50%, -50%)',
+              width:      'clamp(500px, 74vw, 860px)',
+              height:     'clamp(500px, 74vw, 860px)',
+              zIndex:     1,
+              background: 'var(--color-brand-bg)',  // matches page bg — hides any codec-black leakage
             }}
           >
             <video
@@ -315,12 +317,12 @@ export function TestimonialsSection() {
               }}
             />
 
-            {/* Edge-only vignette — only darkens the outer ring; centre is fully open */}
+            {/* Vignette — fades globe edges into the section background; no visible rectangle */}
             <div
               style={{
                 position:      'absolute',
                 inset:         0,
-                background:    'radial-gradient(ellipse 62% 62% at 50% 50%, transparent 62%, rgba(7,7,13,0.45) 80%, rgba(7,7,13,1.00) 100%)',
+                background:    'radial-gradient(ellipse 50% 50% at 50% 50%, transparent 42%, rgba(7,7,13,0.55) 62%, rgba(7,7,13,1.00) 76%)',
                 pointerEvents: 'none',
               }}
             />
