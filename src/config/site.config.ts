@@ -264,6 +264,27 @@ export const siteConfig = {
       ],
     } as const,
   },
+  contact: {
+    eyebrow: 'CONTACT US',
+    heading: "Let's Start a Conversation",
+    card: {
+      tagline: 'Have a project in mind?',
+      cta:     'Book a call now',
+      office:  '2847 Oak Street, San Francisco, CA 94102',
+      phone:    '+98 1223344565',
+      email:    'Info@test100.devops-uni.com',
+    },
+    form: {
+      fields: [
+        { id: 'name',    label: 'Full Name',     placeholder: 'Enter name'           },
+        { id: 'email',   label: 'Email',          placeholder: 'Enter email address'  },
+        { id: 'company', label: 'Company Name',   placeholder: 'Enter company name'   },
+        { id: 'message', label: 'Message',        placeholder: 'Enter your message'   },
+      ] as const,
+      submit: 'Send Email',
+    },
+  },
+
   testimonials: {
     eyebrow:  'TESTIMONIALS',
     heading:  'CUSTOMER SUCCESS STORIES',
