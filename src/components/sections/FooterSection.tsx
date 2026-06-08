@@ -119,15 +119,20 @@ export function FooterSection() {
     >
 
       {/* ── Background TRUS word ─────────────────────────────────────────────
-          Starts near-invisible; brightens when the T arrives.
-          Position:absolute centered so it spans the full footer face.         */}
+          Anchored to the TOP of the footer (not centered vertically) so it
+          sits above the columns as a backdrop word.  The tSlotRef on the T
+          character is what the animated Crystal T measures for its landing
+          coordinates — do not remove it.
+          ─ TRUS vertical position  → controlled by `top` on the outer div
+          ─ TRUS size               → controlled by `fontSize` on motion.span
+          ─ TRUS opacity states     → 0.04 resting / 0.10 after T arrives     */}
       <div
         aria-hidden="true"
         style={{
           position:      'absolute',
-          top:           '50%',
+          top:           '0px',
           left:          '50%',
-          transform:     'translate(-50%, -50%)',
+          transform:     'translateX(-50%)',
           pointerEvents: 'none',
           zIndex:        0,
           userSelect:    'none',
@@ -140,14 +145,14 @@ export function FooterSection() {
           style={{
             display:       'block',
             fontFamily:    'var(--font-display)',
-            fontSize:      'clamp(96px, 14vw, 200px)',
+            fontSize:      'clamp(120px, 17vw, 240px)',
             fontWeight:    900,
             color:         '#FFFFFF',
             letterSpacing: '-0.02em',
             lineHeight:    1,
           }}
         >
-          {/* ref on just the T character — measured for exact T-slot targeting */}
+          {/* ref on the T character only — arrivalX/Y/scale are measured from this */}
           <span ref={tSlotRef}>T</span>RUS
         </motion.span>
       </div>
