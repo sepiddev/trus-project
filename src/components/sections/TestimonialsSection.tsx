@@ -1,18 +1,19 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import type { MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { TestimonialCard } from '@/components/testimonials/TestimonialCard'
 
 // ── Card layout config (desktop) ──────────────────────────────────────────────
-// Staggered 5-card composition: upper-left, upper-right, center, lower-right, lower-left
-// Cards are intentionally spaced so they feel like floating elements, not a cluster.
+// Composition: UL | UR | Center | LL | LR
+// Vertical rows: ~6-8vh (top) · 36vh (mid) · 66-68vh (bottom)
+// Each column pair is on opposite sides so cards never overlap.
 const CARD_LAYOUT = [
-  { left: '3%',  top: '10vh', inputRange: [0.06, 0.40] as [number, number] },  // upper left
-  { left: '58%', top: '8vh',  inputRange: [0.10, 0.44] as [number, number] },  // upper right
-  { left: '37%', top: '40vh', inputRange: [0.14, 0.48] as [number, number] },  // center
-  { left: '58%', top: '65vh', inputRange: [0.18, 0.52] as [number, number] },  // lower right
-  { left: '3%',  top: '63vh', inputRange: [0.22, 0.56] as [number, number] },  // lower left
+  { left: '3%',  top: '7vh',  inputRange: [0.06, 0.40] as [number, number] },  // 1 upper-left
+  { left: '58%', top: '5vh',  inputRange: [0.10, 0.44] as [number, number] },  // 2 upper-right
+  { left: '37%', top: '36vh', inputRange: [0.14, 0.48] as [number, number] },  // 3 center
+  { left: '3%',  top: '66vh', inputRange: [0.18, 0.52] as [number, number] },  // 4 lower-left
+  { left: '58%', top: '68vh', inputRange: [0.22, 0.56] as [number, number] },  // 5 lower-right
 ] as const
 
 // ── Sparse stars (module-level, no re-render churn) ───────────────────────────
@@ -160,9 +161,24 @@ function MobileStack({ items, scrollYMV, containerRef }: MobileStackProps) {
 export function TestimonialsSection() {
   const { eyebrow, heading, subtitle, items } = siteConfig.testimonials
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const scrollYMV    = useMotionValue(0)
+  const containerRef  = useRef<HTMLDivElement>(null)
+  const globeVideoRef = useRef<HTMLVideoElement>(null)
+  const scrollYMV     = useMotionValue(0)
   const [isDesktop, setIsDesktop] = useState(false)
+
+  // Ensure the video plays — some browsers silently ignore the autoPlay attr
+  const handleVideoReady = useCallback(() => {
+    globeVideoRef.current?.play().catch(() => {/* autoplay silently blocked */})
+  }, [])
+
+  useEffect(() => {
+    const v = globeVideoRef.current
+    if (!v) return
+    // Attempt play immediately and also on canplay in case media loads later
+    v.play().catch(() => {})
+    v.addEventListener('canplay', handleVideoReady)
+    return () => v.removeEventListener('canplay', handleVideoReady)
+  }, [handleVideoReady])
 
   // Breakpoint listener
   useEffect(() => {
@@ -277,32 +293,34 @@ export function TestimonialsSection() {
               top:       '50%',
               left:      '50%',
               transform: 'translate(-50%, -50%)',
-              width:     'clamp(480px, 72vw, 820px)',
-              height:    'clamp(480px, 72vw, 820px)',
+              width:     'clamp(500px, 74vw, 860px)',
+              height:    'clamp(500px, 74vw, 860px)',
               zIndex:    1,
             }}
           >
             <video
+              ref={globeVideoRef}
               src="/globe.mp4"
               autoPlay
               loop
               muted
               playsInline
+              preload="auto"
+              onCanPlay={handleVideoReady}
               style={{
                 width:     '100%',
                 height:    '100%',
                 objectFit: 'cover',
                 display:   'block',
-                opacity:   0.90,
               }}
             />
 
-            {/* Subtle edge fade — blends globe into the black background */}
+            {/* Edge-only vignette — only darkens the outer ring; centre is fully open */}
             <div
               style={{
-                position:   'absolute',
-                inset:      0,
-                background: 'radial-gradient(ellipse 58% 58% at 50% 50%, transparent 52%, rgba(7,7,13,0.55) 75%, rgba(7,7,13,1.00) 100%)',
+                position:      'absolute',
+                inset:         0,
+                background:    'radial-gradient(ellipse 62% 62% at 50% 50%, transparent 62%, rgba(7,7,13,0.45) 80%, rgba(7,7,13,1.00) 100%)',
                 pointerEvents: 'none',
               }}
             />
