@@ -8,6 +8,7 @@ import { TemplateCategoriesSection }   from '@/components/sections/TemplateCateg
 import { ServicesSection }             from '@/components/sections/ServicesSection'
 import { TeamSection }                from '@/components/sections/TeamSection'
 import { TestimonialsSection }       from '@/components/sections/TestimonialsSection'
+import { ContactSection }           from '@/components/sections/ContactSection'
 
 export default function App() {
   // Raw scrollY (pixels) so Hero / About animations fire at fixed pixel offsets
@@ -54,6 +55,9 @@ export default function App() {
 
       {/* Testimonials: sticky 350vh section — globe fades out as cards rise. */}
       <TestimonialsSection />
+
+      {/* Contact Us: white section — Crystal T transfers light to info card border. */}
+      <ContactSection />
     </div>
   )
 }
