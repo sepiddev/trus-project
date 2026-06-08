@@ -325,6 +325,32 @@ export const siteConfig = {
       },
     ] as const,
   },
+
+  footer: {
+    tagline: 'Building Innovative Digital Experiences for Modern Businesses.',
+    mainPages: [
+      { label: 'Home',      href: '#'          },
+      { label: 'Services',  href: '#services'  },
+      { label: 'Portfolio', href: '#portfolio' },
+      { label: 'Templates', href: '#templates' },
+      { label: 'Pricing',   href: '#pricing'   },
+      { label: 'About',     href: '#about'     },
+      { label: 'Contact',   href: '#contact'   },
+    ],
+    legal: [
+      { label: 'Privacy Policy', href: '#' },
+      { label: 'Terms',          href: '#' },
+    ],
+    contact: {
+      phone:   '+98 1223344565',
+      address: '2847 Oak Street,\nSan Francisco, CA 94102',
+    },
+    socials: [
+      { label: 'Instagram', href: '#' },
+      { label: 'LinkedIn',  href: '#' },
+      { label: 'X',         href: '#' },
+    ],
+  },
 } as const
 
 export type SiteConfig = typeof siteConfig

@@ -9,6 +9,7 @@ import { ServicesSection }             from '@/components/sections/ServicesSecti
 import { TeamSection }                from '@/components/sections/TeamSection'
 import { TestimonialsSection }       from '@/components/sections/TestimonialsSection'
 import { ContactSection }           from '@/components/sections/ContactSection'
+import { FooterSection }            from '@/components/sections/FooterSection'
 
 export default function App() {
   // Raw scrollY (pixels) so Hero / About animations fire at fixed pixel offsets
@@ -58,6 +59,9 @@ export default function App() {
 
       {/* Contact Us: white section — Crystal T transfers light to info card border. */}
       <ContactSection />
+
+      {/* Footer: T's final destination — locks into TRUS background word. */}
+      <FooterSection />
     </div>
   )
 }
