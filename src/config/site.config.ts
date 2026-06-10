@@ -52,7 +52,7 @@ export const siteConfig = {
 
   about: {
     eyebrow: 'ABOUT US',
-    headline: ['Discover More', 'About [TruS]'] as const,
+    headline: ['Discover More About [TruS]'] as const,
     body: [
       'TruS is a modern digital studio specialising in premium React websites, AI integrations, and advanced motion design. We turn ambitious ideas into polished, production-ready products.',
       'Every project we touch is built from scratch — no bloated page builders, no recycled themes. Just clean code, thoughtful UX, and meticulous attention to detail.',
