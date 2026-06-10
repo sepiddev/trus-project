@@ -16,11 +16,10 @@ export const siteConfig = {
     logo: 'TruS',
     links: [
       { label: 'Home',      href: '#'          },
-      { label: 'Services',  href: '#services'  },
+      { label: 'About',     href: '#about'     },
       { label: 'Portfolio', href: '#portfolio' },
       { label: 'Templates', href: '#templates' },
-      { label: 'Pricing',   href: '#pricing'   },
-      { label: 'About',     href: '#about'     },
+      { label: 'Services',  href: '#services'  },
       { label: 'Contact',   href: '#contact'   },
     ],
     cta: { label: 'Get Started', href: '#contact' },
