@@ -106,7 +106,7 @@ export function FooterSection() {
           textAlign:     'center',
           userSelect:    'none',
           pointerEvents: 'none',
-          overflow:      'hidden',
+          overflow:      'visible',
         }}
       >
         <motion.span
@@ -121,6 +121,7 @@ export function FooterSection() {
             letterSpacing: '-0.01em',
             lineHeight:    1,
             whiteSpace:    'nowrap',
+            scaleY:        1.12,          // +~20px visual height at max font-size; no width change
           }}
         >
           TRUS
