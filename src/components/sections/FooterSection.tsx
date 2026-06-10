@@ -1,32 +1,58 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
-import { motion, useInView, useAnimation }           from 'framer-motion'
-import { CrystalT }                                  from '@/components/hero/CrystalT'
-import { siteConfig }                                from '@/config/site.config'
-import trusLogo                                      from '@/assets/logo.png'
+/**
+ * FooterSection — static, no animation dependencies.
+ *
+ * Layout hierarchy (top → bottom):
+ *   1. Large TRUS background word  — block element, above columns
+ *   2. 4-column content grid       — Logo | Main Pages | Legal | Contact Us
+ *   3. Divider
+ *   4. Bottom bar                  — copyright (dynamic year) + social links
+ *
+ * Typography:
+ *   Column titles → DM Sans 700 (var(--font-hero))
+ *   Everything else → Inter 400 (var(--font-body))
+ *
+ * TRUS sizing:
+ *   font-size: clamp(130px, 20.2vw, 292px)
+ *   At 1440 px viewport → fontSize ≈ 291 px → TRUS word ≈ 895 px wide
+ *   Controlled by `fontSize` on the <span> inside #footer-trus-block
+ *
+ * T journey: fully removed — no imports, refs, state, effects, or timers.
+ *   Will be redesigned from scratch in a future iteration.
+ */
 
-// How long the T takes to travel from entry to its slot in the TRUS word
-const ARRIVE_DURATION = 3.0   // seconds
+import { siteConfig } from '@/config/site.config'
+import trusLogo       from '@/assets/logo.png'
 
-// Column heading style — reused across Main Pages, Legal, Contact Us
-const columnTitleStyle: React.CSSProperties = {
-  fontFamily:    'var(--font-body)',
-  fontSize:      '13px',
-  fontWeight:    600,
+// ─── Shared style tokens ──────────────────────────────────────────────────────
+
+/** DM Sans Bold — used for all column section titles */
+const titleStyle: React.CSSProperties = {
+  fontFamily:    'var(--font-hero)',   // DM Sans
+  fontSize:      '14px',
+  fontWeight:    700,
   color:         '#FFFFFF',
   letterSpacing: '0.09em',
   textTransform: 'uppercase' as const,
+  lineHeight:    '100%',
   margin:        '0 0 24px 0',
 }
 
+/** Inter Regular — used for all body-level text in the footer */
+const bodyStyle: React.CSSProperties = {
+  fontFamily: 'var(--font-body)',  // Inter
+  fontWeight: 400,
+  lineHeight: '100%',
+}
+
 // ─── FooterLink ───────────────────────────────────────────────────────────────
-// Underline sweeps left → right on hover — same pattern as Navbar NavLink.
+/** Underline sweeps left → right on hover — same pattern as Navbar NavLink. */
 function FooterLink({ href, label }: { href: string; label: string }) {
   return (
     <a
       href={href}
       className="group relative inline-block"
       style={{
-        fontFamily:     'var(--font-body)',
+        ...bodyStyle,
         fontSize:       '14px',
         color:          'rgba(255,255,255,0.65)',
         textDecoration: 'none',
@@ -45,158 +71,58 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 
 // ─── FooterSection ────────────────────────────────────────────────────────────
 export function FooterSection() {
-  const footerRef  = useRef<HTMLElement>(null)
-  const tSlotRef   = useRef<HTMLSpanElement>(null)
-  const controls   = useAnimation()
-  const timers     = useRef<ReturnType<typeof setTimeout>[]>([])
-  const prevInView = useRef(false)
-
-  const [tActivated, setTActivated] = useState(false)
-
-  // Fire when 20 % of the footer is visible — enough for TRUS text to be on screen
-  const isInView = useInView(footerRef, { once: false, amount: 0.20 })
-
-  const clearTimers = useCallback(() => {
-    timers.current.forEach(clearTimeout)
-    timers.current = []
-  }, [])
-
-  useEffect(() => {
-    const wasInView = prevInView.current
-    prevInView.current = isInView
-
-    if (!isInView) {
-      if (wasInView) {
-        clearTimers()
-        setTActivated(false)           // dim TRUS again — journey resets
-        controls.set({ opacity: 0 })  // hide T so re-entry looks fresh
-      }
-      return
-    }
-    if (wasInView) return  // still in view after a re-render
-
-    clearTimers()
-
-    const footer = footerRef.current
-    const tSlot  = tSlotRef.current
-    if (!footer || !tSlot) return
-
-    const footerRect = footer.getBoundingClientRect()
-    const tSlotRect  = tSlot.getBoundingClientRect()
-
-    // Section-relative arrival coordinates (T locks exactly into the T glyph)
-    const arrivalX     = tSlotRect.left  - footerRect.left
-    const arrivalY     = tSlotRect.top   - footerRect.top
-    // Scale so CrystalT fills the background T character's exact width
-    const arrivalScale = tSlotRect.width / 380
-
-    // Enter from off-screen left, matching the direction ContactT exited
-    const entryX = -(380 + 100)
-    const entryY = arrivalY
-
-    controls.set({ x: entryX, y: entryY, scale: 0.34, opacity: 0 })
-    controls.start({
-      x:       [entryX,        arrivalX      ],
-      y:       [entryY,        arrivalY      ],
-      opacity: [0,             1             ],
-      scale:   [0.34,          arrivalScale  ],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      transition: { duration: ARRIVE_DURATION, ease: [0.16, 1, 0.3, 1] as any },
-    })
-
-    // Activate TRUS brightening the moment T locks into position
-    const t1 = setTimeout(() => setTActivated(true), ARRIVE_DURATION * 1000)
-    timers.current.push(t1)
-  }, [isInView, clearTimers, controls])
-
   const { footer } = siteConfig
 
   return (
-    <footer
-      id="footer"
-      ref={footerRef}
-      style={{ position: 'relative', background: '#07070D', overflow: 'visible' }}
-    >
+    <footer id="footer" style={{ background: '#07070D' }}>
 
-      {/* ── Background TRUS word ─────────────────────────────────────────────
-          Anchored to the TOP of the footer (not centered vertically) so it
-          sits above the columns as a backdrop word.  The tSlotRef on the T
-          character is what the animated Crystal T measures for its landing
-          coordinates — do not remove it.
-          ─ TRUS vertical position  → controlled by `top` on the outer div
-          ─ TRUS size               → controlled by `fontSize` on motion.span
-          ─ TRUS opacity states     → 0.04 resting / 0.10 after T arrives     */}
+      {/* ── 1. Large TRUS background word ──────────────────────────────────
+          Block element in document flow — NOT position:absolute.
+          Sits visually above the 4-column content grid.
+
+          ▸ TRUS vertical position   → paddingTop / paddingBottom on this div
+          ▸ TRUS width / font-size   → fontSize on the inner <span>
+            clamp(130px, 20.2vw, 292px) targets ≈ 895 px at 1440 px viewport.
+          ▸ TRUS opacity             → opacity on the inner <span>               */}
       <div
+        id="footer-trus-block"
         aria-hidden="true"
         style={{
-          position:      'absolute',
-          top:           '0px',
-          left:          '50%',
-          transform:     'translateX(-50%)',
-          pointerEvents: 'none',
-          zIndex:        0,
+          paddingTop:    '44px',
+          paddingBottom: '36px',
+          textAlign:     'center',
           userSelect:    'none',
-          whiteSpace:    'nowrap',
+          pointerEvents: 'none',
+          overflow:      'hidden',
         }}
       >
-        <motion.span
-          animate={{ opacity: tActivated ? 0.10 : 0.04 }}
-          transition={{ duration: 2.5, ease: 'easeInOut' }}
+        <span
           style={{
             display:       'block',
-            fontFamily:    'var(--font-display)',
-            fontSize:      'clamp(120px, 17vw, 240px)',
+            fontFamily:    'var(--font-display)',              // Syne 900
+            fontSize:      'clamp(130px, 20.2vw, 292px)',     // ≈ 895 px wide @ 1440 px
             fontWeight:    900,
             color:         '#FFFFFF',
-            letterSpacing: '-0.02em',
+            opacity:       0.12,
+            letterSpacing: '-0.01em',
             lineHeight:    1,
+            whiteSpace:    'nowrap',
           }}
         >
-          {/* ref on the T character only — arrivalX/Y/scale are measured from this */}
-          <span ref={tSlotRef}>T</span>RUS
-        </motion.span>
+          TRUS
+        </span>
       </div>
 
-      {/* ── Crystal T — absolutely scoped to this section ───────────────────
-          Enters from off-screen left (same direction ContactT exited),
-          travels to the T slot in the background TRUS word, and locks in.     */}
+      {/* ── 2. Footer content ───────────────────────────────────────────── */}
       <div
-        aria-hidden="true"
-        className="hidden lg:block pointer-events-none"
-        style={{
-          position:      'absolute',
-          inset:         0,
-          overflow:      'visible',
-          zIndex:        20,
-          pointerEvents: 'none',
-        }}
-      >
-        <motion.div
-          animate={controls}
-          style={{
-            position:        'absolute',
-            left:            0,
-            top:             0,
-            width:           380,
-            opacity:         0,
-            transformOrigin: 'center center',
-            pointerEvents:   'none',
-          }}
-        >
-          <CrystalT />
-        </motion.div>
-      </div>
-
-      {/* ── Footer content ───────────────────────────────────────────────── */}
-      <div
-        className="relative mx-auto w-full max-w-[1200px] px-5"
-        style={{ paddingTop: '120px', paddingBottom: '60px', position: 'relative', zIndex: 2 }}
+        className="mx-auto w-full max-w-[1200px] px-5"
+        style={{ paddingBottom: '60px' }}
       >
 
-        {/* 4-column grid */}
+        {/* 4-column grid: Logo | Main Pages | Legal | Contact Us */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1.5fr_1fr_1.5fr] gap-12">
 
-          {/* Left — logo + tagline */}
+          {/* Logo + tagline */}
           <div>
             <img
               src={trusLogo}
@@ -204,12 +130,11 @@ export function FooterSection() {
               style={{ height: '44px', width: 'auto', display: 'block', marginBottom: '20px' }}
             />
             <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize:   '14px',
-              lineHeight: '1.65',
-              color:      'rgba(255,255,255,0.55)',
-              maxWidth:   '220px',
-              margin:     0,
+              ...bodyStyle,
+              fontSize:  '14px',
+              color:     'rgba(255,255,255,0.55)',
+              maxWidth:  '220px',
+              margin:    0,
             }}>
               {footer.tagline}
             </p>
@@ -217,7 +142,7 @@ export function FooterSection() {
 
           {/* Main Pages */}
           <div>
-            <h4 style={columnTitleStyle}>Main Pages</h4>
+            <h4 style={titleStyle}>Main Pages</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {footer.mainPages.map(link => (
                 <li key={link.label}>
@@ -229,7 +154,7 @@ export function FooterSection() {
 
           {/* Legal */}
           <div>
-            <h4 style={columnTitleStyle}>Legal</h4>
+            <h4 style={titleStyle}>Legal</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {footer.legal.map(link => (
                 <li key={link.label}>
@@ -241,14 +166,13 @@ export function FooterSection() {
 
           {/* Contact Us */}
           <div>
-            <h4 style={columnTitleStyle}>Contact Us</h4>
+            <h4 style={titleStyle}>Contact Us</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <a
                 href={`tel:${footer.contact.phone}`}
                 style={{
-                  fontFamily:     'var(--font-body)',
+                  ...bodyStyle,
                   fontSize:       '14px',
-                  lineHeight:     '1.5',
                   color:          'rgba(255,255,255,0.70)',
                   textDecoration: 'none',
                 }}
@@ -256,9 +180,8 @@ export function FooterSection() {
                 {footer.contact.phone}
               </a>
               <p style={{
-                fontFamily: 'var(--font-body)',
+                ...bodyStyle,
                 fontSize:   '14px',
-                lineHeight: '1.65',
                 color:      'rgba(255,255,255,0.70)',
                 margin:     0,
                 whiteSpace: 'pre-line',
@@ -270,10 +193,10 @@ export function FooterSection() {
 
         </div>
 
-        {/* Divider */}
+        {/* ── 3. Divider ──────────────────────────────────────────────────── */}
         <hr style={{ border: 'none', borderTop: '1px solid #FFFFFF4D', margin: '48px 0 32px' }} />
 
-        {/* Bottom bar */}
+        {/* ── 4. Bottom bar ───────────────────────────────────────────────── */}
         <div style={{
           display:        'flex',
           alignItems:     'center',
@@ -281,21 +204,24 @@ export function FooterSection() {
           flexWrap:       'wrap',
           gap:            '16px',
         }}>
+          {/* Copyright — year is dynamic, never hardcoded */}
           <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize:   '14px',
-            color:      'rgba(255,255,255,0.40)',
-            margin:     0,
+            ...bodyStyle,
+            fontSize: '14px',
+            color:    'rgba(255,255,255,0.40)',
+            margin:   0,
           }}>
             © {new Date().getFullYear()} TruS. All rights reserved.
           </p>
+
+          {/* Social links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
             {footer.socials.map(social => (
               <a
                 key={social.label}
                 href={social.href}
                 style={{
-                  fontFamily:     'var(--font-body)',
+                  ...bodyStyle,
                   fontSize:       '14px',
                   color:          'rgba(255,255,255,0.55)',
                   textDecoration: 'none',
