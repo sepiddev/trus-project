@@ -3,7 +3,6 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { ProjectCard }            from '@/components/portfolio/ProjectCard'
 import { AnimatedPortfolioWord }  from '@/components/portfolio/AnimatedPortfolioWord'
-import { PortfolioT }             from '@/components/hero/PortfolioT'
 
 // Sparse stars — module-level so they never re-generate on re-render
 const PORT_STARS = Array.from({ length: 28 }, (_, i) => ({
@@ -26,9 +25,6 @@ export function PortfolioSection() {
 
   // ── Derived MotionValues ───────────────────────────────────────────────────
 
-  // Portfolio T: appears in first 45% of section scroll
-  const portfolioTProgress = useTransform(sectionProgress, [0, 0.45], [0, 1])
-
   // Cards horizontal slide (row 1 and row 2 at different rates for parallax depth)
   // Both start off-screen right, slide to off-screen left
   const cardsRow1X = useTransform(sectionProgress, [0.05, 0.88], ['38vw', '-125vw'])
@@ -43,9 +39,6 @@ export function PortfolioSection() {
 
   return (
     <>
-      {/* ── Fixed Crystal T for Portfolio phase ── */}
-      <PortfolioT portfolioTProgress={portfolioTProgress} />
-
       {/* ── Scroll container — 420vh gives ~2835px of scroll travel ── */}
       {/* ── TUNING: Portfolio section height — change the vh value below ── */}
       <div

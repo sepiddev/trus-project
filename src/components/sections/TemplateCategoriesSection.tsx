@@ -2,7 +2,6 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { useInView } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { FadeIn } from '@/components/motion/FadeIn'
-import { TemplatesT } from '@/components/hero/TemplatesT'
 import { TemplateCard } from '@/components/templates/TemplateCard'
 import { CategoryTabs } from '@/components/templates/CategoryTabs'
 
@@ -37,13 +36,11 @@ const FEATURED_INDEX = 4
 const CASCADE_ORDER  = [3, 5, 1, 7, 6, 8, 0, 9, 2]
 const CASCADE_DELAYS = [0, 180, 360, 560, 780, 1000, 1240, 1510, 1800]   // ms from cascade start
 
-// ── T animation timing (must match TemplatesT keyframe times × duration) ────
-const T_ARRIVAL_MS  = Math.round(2200 * 0.54)   // ≈ 1188 ms — when T centres on card #5
-const CASCADE_START = T_ARRIVAL_MS + 480         // start cascade after card #5 glow establishes
+// Timing for card lighting sequence on section entry
+const CARD5_LIT_DELAY = 300   // ms before the featured card lights up
+const CASCADE_DELAY   = 780   // ms before the cascade spreads to other cards
 
-// Type helpers
 type Category = typeof siteConfig.templateCategories.categories[number]
-type TState   = { active: boolean; targetX: number; targetY: number }
 
 export function TemplateCategoriesSection() {
   const { eyebrow, heading, description, seeMore, categories, templates } =
@@ -51,13 +48,11 @@ export function TemplateCategoriesSection() {
 
   // ── State ────────────────────────────────────────────────────────────────────
   const [activeCategory, setActiveCategory] = useState<Category>(categories[0])
-  const [tState, setTState]                 = useState<TState>({ active: false, targetX: 0, targetY: 0 })
   const [card5Lit, setCard5Lit]             = useState(false)
   const [activatedSet, setActivatedSet]     = useState<Set<number>>(new Set())
 
   // ── Refs ─────────────────────────────────────────────────────────────────────
   const sectionRef    = useRef<HTMLElement>(null)
-  const card5Ref      = useRef<HTMLDivElement>(null)
   const prevInViewRef = useRef(false)
   const timerIds      = useRef<ReturnType<typeof setTimeout>[]>([])
 
@@ -84,7 +79,7 @@ export function TemplateCategoriesSection() {
     })
   }, [])
 
-  // ── Main animation sequence ───────────────────────────────────────────────────
+  // ── Card lighting sequence ────────────────────────────────────────────────────
   // Replays every time the section enters the viewport.
   // On exit: clears timers and resets cards to dark so the next entry feels fresh.
   useEffect(() => {
@@ -96,46 +91,33 @@ export function TemplateCategoriesSection() {
       if (wasInView) {
         clearTimers()
         resetCards()
-        setTState({ active: false, targetX: 0, targetY: 0 })
       }
       return
     }
 
     if (wasInView) return  // still in view (e.g. re-render) — don't restart
 
-    // Entering: full sequence
     clearTimers()
     resetCards()
 
-    const el = card5Ref.current
-    if (!el) return
-
-    const rect = el.getBoundingClientRect()
-    const tx = rect.left + rect.width  / 2
-    const ty = rect.top  + rect.height / 2
-
-    // Reset T to hidden first, then activate — ensures animation replays every time
-    setTState({ active: false, targetX: 0, targetY: 0 })
-    const t0 = setTimeout(() => setTState({ active: true, targetX: tx, targetY: ty }), 50)
-    const t1 = setTimeout(() => setCard5Lit(true), 50 + T_ARRIVAL_MS)
-    const t2 = setTimeout(() => startCascade(), 50 + CASCADE_START)
-    timerIds.current.push(t0, t1, t2)
+    const t1 = setTimeout(() => setCard5Lit(true), CARD5_LIT_DELAY)
+    const t2 = setTimeout(() => startCascade(),    CASCADE_DELAY)
+    timerIds.current.push(t1, t2)
 
     return () => {
-      clearTimeout(t0); clearTimeout(t1); clearTimeout(t2)
+      clearTimeout(t1); clearTimeout(t2)
     }
   }, [isInView, clearTimers, resetCards, startCascade])
 
-  // ── Tab switch ────────────────────────────────────────────────────────────────
-  // Resets cards and re-runs the lighting cascade (without T replay).
+  // ── Tab switch — resets cards and re-runs the lighting cascade ───────────────
   function handleCategoryChange(cat: string) {
     clearTimers()
     resetCards()
     setActiveCategory(cat as Category)
 
-    // Brief pause so the dark reset is visible before the sequence starts
+    // Brief pause so the dark reset is visible before the cascade starts
     const t1 = setTimeout(() => setCard5Lit(true), 350)
-    const t2 = setTimeout(() => startCascade(), 350 + 480)
+    const t2 = setTimeout(() => startCascade(), 830)
     timerIds.current.push(t1, t2)
   }
 
@@ -146,13 +128,6 @@ export function TemplateCategoriesSection() {
 
   return (
     <>
-      {/* ── Position:fixed Crystal T ── */}
-      <TemplatesT
-        active={tState.active}
-        targetX={tState.targetX}
-        targetY={tState.targetY}
-      />
-
       {/* ── Section ── */}
       <section
         id="templates"
@@ -351,7 +326,6 @@ export function TemplateCategoriesSection() {
                       }}
                     >
                       <TemplateCard
-                        ref={isFeatured ? card5Ref : undefined}
                         name={tpl.name}
                         tag={tpl.tag}
                         image={tpl.image}

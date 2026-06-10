@@ -9,6 +9,7 @@ import { ServicesSection }             from '@/components/sections/ServicesSecti
 import { TeamSection }                from '@/components/sections/TeamSection'
 import { TestimonialsSection }       from '@/components/sections/TestimonialsSection'
 import { ContactSection }           from '@/components/sections/ContactSection'
+import { FooterSection }            from '@/components/sections/FooterSection'
 
 export default function App() {
   // Raw scrollY (pixels) so Hero / About animations fire at fixed pixel offsets
@@ -36,15 +37,13 @@ export default function App() {
       <HeroSection  orbitOpacity={heroOrbitOpacity} />
       <AboutSection imageGlowIntensity={imageGlowIntensity} />
 
-      {/* Portfolio: self-contained sticky section.
-          Renders its own PortfolioT (position:fixed) internally. */}
+      {/* Portfolio: self-contained sticky section — horizontal card parallax. */}
       <PortfolioSection />
 
-      {/* Why Us: self-contained sticky section.
-          Renders its own WhyUsT (position:fixed) internally. */}
+      {/* Why Us: self-contained sticky section — scroll-split card grid. */}
       <WhyUsSection />
 
-      {/* Template Categories: entrance-triggered Crystal T + time-based cascade. */}
+      {/* Template Categories: entrance-triggered card lighting cascade. */}
       <TemplateCategoriesSection />
 
       {/* Services: scroll-driven two-row card parallax. */}
@@ -56,8 +55,11 @@ export default function App() {
       {/* Testimonials: sticky 350vh section — globe fades out as cards rise. */}
       <TestimonialsSection />
 
-      {/* Contact Us: white section — Crystal T transfers light to info card border. */}
+      {/* Contact Us: white section — info card border lights on scroll entry. */}
       <ContactSection />
+
+      {/* Footer: TRUS background word fades in on scroll. */}
+      <FooterSection />
     </div>
   )
 }

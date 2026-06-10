@@ -3,7 +3,6 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { WhyUsCard } from '@/components/whyus/WhyUsCard'
-import { WhyUsT } from '@/components/hero/WhyUsT'
 
 // Sparse background stars — generated once at module level, no re-render churn
 const WHY_STARS = Array.from({ length: 30 }, (_, i) => ({
@@ -19,11 +18,10 @@ const WHY_STARS = Array.from({ length: 30 }, (_, i) => ({
  *
  * ── Scroll timeline (sectionProgress 0 → 1) ──────────────────────────────
  *
- *  [0.02, 0.20]  WhyUsT enters from LEFT, arrives near Card 01, fades out
  *  [0.05, 0.70]  Cards split: odd (01 & 03) rise, even (02 & 04) drop
  *
- *  Card border sequence — T is GONE before cards 02–04 activate:
- *  [0.05, 0.28]  Card 01 border pulse  ← simultaneous with T arrival & fade
+ *  Card border pulse sequence:
+ *  [0.05, 0.28]  Card 01 border pulse
  *  [0.30, 0.54]  Card 02 border pulse
  *  [0.54, 0.75]  Card 03 border pulse
  *  [0.74, 0.93]  Card 04 border pulse
@@ -31,7 +29,6 @@ const WHY_STARS = Array.from({ length: 30 }, (_, i) => ({
  * ── Tuning quick-reference ───────────────────────────────────────────────
  *   card vertical movement amount  → cardsYOdd / cardsYEven output range (±60 px)
  *   each card border glow timing   → card[N]Progress useTransform stops below
- *   T fade timing / entry position → WhyUsT.tsx
  *   background grid cell size      → backgroundSize in grid <div> (~120 px)
  */
 export function WhyUsSection() {
@@ -54,10 +51,7 @@ export function WhyUsSection() {
   // ── Border activation pulses ───────────────────────────────────────────
   // Each is a 3-stop tent: riseStart → peak → fallEnd, mapped to 0 → 1 → 0.
   //
-  // Card 01: synced with WhyUsT arrival. T fades out by ≈ 0.20;
-  //          Card 01's peak (0.15) coincides with the T being fully visible.
-  //          After T disappears, cards 02–04 run solo.
-  //
+  // Each is a 3-stop tent: 0 → 1 → 0 over its window.
   // ── TUNING: each card border glow timing ──
   //   [riseStart, peak, fallEnd] — all sectionProgress fractions (0–1).
   //   Widen  riseStart→peak  for a slower glow-up.
@@ -80,9 +74,6 @@ export function WhyUsSection() {
 
   return (
     <>
-      {/* Fixed Crystal T — enters, triggers Card 01, exits. See WhyUsT.tsx. */}
-      <WhyUsT sectionProgress={sectionProgress} />
-
       {/* ── 200 vh scroll container ─────────────────────────────────────── */}
       <div
         id="why-us"
