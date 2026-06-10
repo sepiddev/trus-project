@@ -1,5 +1,5 @@
 /**
- * FooterSection — static, no animation dependencies.
+ * FooterSection — no Crystal T dependencies.
  *
  * Layout hierarchy (top → bottom):
  *   1. Large TRUS background word  — block element, above columns
@@ -12,16 +12,23 @@
  *   Everything else → Inter 400 (var(--font-body))
  *
  * TRUS sizing:
- *   font-size: clamp(130px, 20.2vw, 292px)
- *   At 1440 px viewport → fontSize ≈ 291 px → TRUS word ≈ 895 px wide
- *   Controlled by `fontSize` on the <span> inside #footer-trus-block
+ *   font-size: clamp(60px, 11.5vw, 165px)
+ *   At 1440 px viewport → fontSize ≈ 165 px → TRUS word ≈ 450 px wide
+ *   Controlled by `fontSize` on the motion.span inside #footer-trus-block
  *
- * T journey: fully removed — no imports, refs, state, effects, or timers.
- *   Will be redesigned from scratch in a future iteration.
+ * TRUS scroll fade:
+ *   Starts at opacity 0.03 (dim / inactive).
+ *   Fades to 0.16 when the footer enters view (useInView, once:false).
+ *   Transition: 1.8 s easeInOut — premium "turning on" feel.
+ *   Resets on scroll out so re-entry re-plays the fade.
+ *
+ * T journey: fully removed. Will be redesigned from scratch later.
  */
 
-import { siteConfig } from '@/config/site.config'
-import trusLogo       from '@/assets/logo.png'
+import { useRef }                        from 'react'
+import { motion, useInView }             from 'framer-motion'
+import { siteConfig }                    from '@/config/site.config'
+import trusLogo                          from '@/assets/logo.png'
 
 // ─── Shared style tokens ──────────────────────────────────────────────────────
 
@@ -73,17 +80,23 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 export function FooterSection() {
   const { footer } = siteConfig
 
+  // TRUS fade-in: triggers when the footer enters the viewport.
+  // once:false so re-entry re-plays the "turning on" effect.
+  const footerRef = useRef<HTMLElement>(null)
+  const isInView  = useInView(footerRef, { once: false, amount: 0.15 })
+
   return (
-    <footer id="footer" style={{ background: '#07070D' }}>
+    <footer id="footer" ref={footerRef} style={{ background: '#07070D' }}>
 
       {/* ── 1. Large TRUS background word ──────────────────────────────────
           Block element in document flow — NOT position:absolute.
           Sits visually above the 4-column content grid.
 
           ▸ TRUS vertical position   → paddingTop / paddingBottom on this div
-          ▸ TRUS width / font-size   → fontSize on the inner <span>
-            clamp(130px, 20.2vw, 292px) targets ≈ 895 px at 1440 px viewport.
-          ▸ TRUS opacity             → opacity on the inner <span>               */}
+          ▸ TRUS width / font-size   → fontSize on the motion.span
+            clamp(60px, 11.5vw, 165px) targets ≈ 450 px wide at 1440 px
+          ▸ TRUS opacity states      → 0.03 resting / 0.16 active
+          ▸ Fade timing              → transition duration / ease below        */}
       <div
         id="footer-trus-block"
         aria-hidden="true"
@@ -96,21 +109,22 @@ export function FooterSection() {
           overflow:      'hidden',
         }}
       >
-        <span
+        <motion.span
+          animate={{ opacity: isInView ? 0.16 : 0.03 }}
+          transition={{ duration: 1.8, ease: 'easeInOut' }}
           style={{
             display:       'block',
-            fontFamily:    'var(--font-display)',              // Syne 900
-            fontSize:      'clamp(130px, 20.2vw, 292px)',     // ≈ 895 px wide @ 1440 px
+            fontFamily:    'var(--font-display)',           // Syne 900
+            fontSize:      'clamp(60px, 11.5vw, 165px)',   // ≈ 450 px wide @ 1440 px
             fontWeight:    900,
             color:         '#FFFFFF',
-            opacity:       0.12,
             letterSpacing: '-0.01em',
             lineHeight:    1,
             whiteSpace:    'nowrap',
           }}
         >
           TRUS
-        </span>
+        </motion.span>
       </div>
 
       {/* ── 2. Footer content ───────────────────────────────────────────── */}
