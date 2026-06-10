@@ -39,12 +39,12 @@ export function PortfolioSection() {
 
   return (
     <>
-      {/* ── Scroll container — 420vh gives ~2835px of scroll travel ── */}
+      {/* ── Scroll container ── */}
       {/* ── TUNING: Portfolio section height — change the vh value below ── */}
       <div
         id="portfolio"
         ref={containerRef}
-        style={{ height: '400vh', position: 'relative' }}
+        style={{ height: '500vh', position: 'relative' }}
       >
         {/* ── Sticky viewport panel ─────────────────────────────────────────── */}
         <div
@@ -134,8 +134,8 @@ export function PortfolioSection() {
 
           {/* ── Top content — z:10 above cards ───────────────────────────── */}
           <div
-            className="relative mx-auto w-full max-w-300 px-5"
-            style={{ zIndex: 10, paddingTop: '100px' }}
+            className="relative mx-auto w-full max-w-[1200px] px-5"
+            style={{ zIndex: 10, paddingTop: '130px' }}
           >
             {/* Row: label + heading + description (left) | See More (right) */}
             <div className="flex items-start justify-between">
@@ -199,13 +199,17 @@ export function PortfolioSection() {
 
           {/* ── PORTFOLIO background word — z:2, behind cards ────────────── */}
           {/* ── TUNING: PORTFOLIO word vertical position ──
-                Sits just below Row 1's bottom edge, between the two card rows.
-                clamp(floor, preferred-vh, ceiling)                            */}
+                Sits in the gap between Row 1's bottom edge and Row 2.
+                Row 1 bottom ≈ Row1.top + 240 px (card height).
+                clamp(floor, preferred-vh, ceiling)
+                floor   = 490 px
+                64vh    = preferred (576 px at 900 px, 691 px at 1080 px)
+                ceiling = 680 px                                              */}
           <div
             aria-hidden="true"
             style={{
               position:      'absolute',
-              top:           'clamp(405px, 58vh, 555px)',
+              top:           'clamp(490px, 64vh, 680px)',
               left:          0,
               right:         0,
               paddingLeft:   'max(120px, calc((100vw - 1200px) / 2 + 20px))',
@@ -222,13 +226,13 @@ export function PortfolioSection() {
           {/* ── Row 1 ────────────────────────────────────────────────────────
                ── TUNING: Row 1 vertical position ──
                   clamp(floor, preferred-vh, ceiling)
-                  floor   = 244 px  — minimum safe distance below the title block
-                  28vh    = preferred (252 px at 900 px viewport)
-                  ceiling = 310 px  — prevents rows drifting too low on tall screens  */}
+                  floor   = 260 px  — min safe distance below the title block
+                  34vh    = preferred (306 px at 900 px, 367 px at 1080 px)
+                  ceiling = 420 px  — cap on tall/wide screens               */}
           <div
             style={{
               position: 'absolute',
-              top:      'clamp(200px, 30vh, 350px)',
+              top:      'clamp(260px, 34vh, 420px)',
               left:     0,
               right:    0,
               zIndex:   5,
@@ -259,14 +263,15 @@ export function PortfolioSection() {
           {/* ── Row 2 ────────────────────────────────────────────────────────
                ── TUNING: Row 2 vertical position ──
                   clamp(floor, preferred-vh, ceiling)
-                  floor   = 500 px  — Row 1 floor (244) + card height (240) + 16 px gap
-                  57vh    = preferred (513 px at 900 px viewport)
-                  ceiling = 590 px  — keeps Row 2 inside 100 vh on very tall screens
-                  At 768 px: floor (500) used → Row 2 bottom = 740 px, 28 px from edge ✓  */}
+                  floor   = 640 px  — Row 1 floor + 240 + ~140 px gap
+                  72vh    = preferred (648 px at 900 px, 778 px at 1080 px)
+                  ceiling = 780 px
+                  calc(100vh - 244px) safety cap ensures row bottom stays inside vh
+                  Gap between rows: ≈102 px at 900 px, ≈171 px at 1080 px        */}
           <div
             style={{
               position: 'absolute',
-              top:      'min(clamp(520px, 62vh, 640px), calc(100vh - 244px))',
+              top:      'min(clamp(640px, 72vh, 780px), calc(100vh - 244px))',
               left:     0,
               right:    0,
               zIndex:   5,
