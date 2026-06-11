@@ -3,6 +3,60 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { Button } from '@/components/ui/Button'
 import { EASE_PREMIUM, DURATION_MD, DURATION_SM } from '@/motion/variants'
+import trusLogo from '@/assets/logo.png'
+
+// ─── Scroll-spy ───────────────────────────────────────────────────────────────
+// IDs of every section that has a corresponding nav link.
+// Defined at module level so the array reference is stable across renders
+// (avoids triggering useEffect repeatedly).
+//
+// 'pricing' is intentionally excluded — no <section id="pricing"> exists yet.
+// 'why-us' is excluded — it has no nav link.
+// When the user scrolls through an untracked section (WhyUs, Team, Testimonials)
+// the previous tracked section stays active, which is the expected behaviour.
+const TRACKED_SECTION_IDS = ['about', 'portfolio', 'templates', 'services', 'contact'] as const
+
+// Fraction of viewport height at which a section "activates" — 40% from top.
+// Using 40% (rather than 50%) means the nav updates slightly before the section
+// fully dominates the view, which feels more responsive.
+const TRIGGER_FRACTION = 0.40
+
+/**
+ * Returns the ID of the last tracked section whose top edge has scrolled
+ * above the trigger line, or '' when the user is at the very top (Home).
+ *
+ * Strategy: iterate all tracked sections in DOM order, keep updating `current`
+ * as long as a section's top is ≤ trigger.  The last one to satisfy the
+ * condition is the deepest visible section — therefore the active one.
+ */
+function useScrollSpy(): string {
+  const [active, setActive] = useState('')
+
+  useEffect(() => {
+    const update = () => {
+      const trigger = window.innerHeight * TRIGGER_FRACTION
+      let current = ''
+
+      for (const id of TRACKED_SECTION_IDS) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        if (el.getBoundingClientRect().top <= trigger) {
+          current = id
+        }
+      }
+
+      setActive(current)
+    }
+
+    window.addEventListener('scroll', update, { passive: true })
+    update() // initialise immediately so state is correct on mount
+    return () => window.removeEventListener('scroll', update)
+  }, []) // empty — TRACKED_SECTION_IDS and TRIGGER_FRACTION are module-level constants
+
+  return active
+}
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
 
 export interface NavbarProps {
   data?: typeof siteConfig.nav
@@ -12,6 +66,7 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
   const [scrolled,   setScrolled]   = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  // Backdrop blur/bg — triggers after 20 px of scroll
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -25,6 +80,9 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
+  // Live active-section ID from scroll position
+  const activeSection = useScrollSpy()
+
   return (
     <>
       <motion.header
@@ -34,9 +92,9 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
         className="fixed inset-x-0 top-0 z-50"
         role="banner"
       >
-        {/* Backdrop — fades in on scroll, border always present */}
+        {/* Backdrop — full-width blur + bg, NO border (border handled separately below) */}
         <motion.div
-          className="absolute inset-0 border-b border-[rgba(255,255,255,0.18)]"
+          className="absolute inset-0"
           animate={{
             backgroundColor: scrolled ? 'rgba(7, 7, 13, 0.92)' : 'rgba(0,0,0,0)',
             backdropFilter:  scrolled ? 'blur(20px)'            : 'blur(0px)',
@@ -45,26 +103,49 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
           aria-hidden="true"
         />
 
+        {/* Bottom border — constrained to content container width, not edge-to-edge */}
+        <div
+          className="absolute bottom-0 inset-x-0 flex justify-center px-5 pointer-events-none"
+          aria-hidden="true"
+        >
+          <div
+            className="w-full max-w-[1200px] h-px"
+            style={{ background: 'rgba(255,255,255,0.18)' }}
+          />
+        </div>
+
         <nav
           className="relative mx-auto flex h-[72px] max-w-[1200px] items-center justify-between px-5"
           aria-label="Main navigation"
         >
-          {/* Logo */}
+          {/* Logo — same asset as Footer */}
           <a
             href="/"
-            className="font-display text-xl font-bold tracking-tight text-brand-white focus-visible:rounded shrink-0"
-            aria-label={`${data.logo} — home`}
+            className="shrink-0 focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            aria-label="TruS — home"
           >
-            {data.logo}
+            <img
+              src={trusLogo}
+              alt="TruS"
+              style={{ height: '32px', width: 'auto', display: 'block' }}
+            />
           </a>
 
           {/* Desktop nav links */}
           <ul className="hidden lg:flex items-center gap-[10px]" role="list">
-            {data.links.map((link, i) => (
-              <li key={link.label}>
-                <NavLink href={link.href} label={link.label} active={i === 0} />
-              </li>
-            ))}
+            {data.links.map((link) => {
+              // Derive the section ID from the href.
+              // href '#'       → sectionId ''        → active when at top of page
+              // href '#about'  → sectionId 'about'   → active when about is in view
+              const sectionId = link.href === '#' ? '' : link.href.slice(1)
+              const isActive  = activeSection === sectionId
+
+              return (
+                <li key={link.label}>
+                  <NavLink href={link.href} label={link.label} active={isActive} />
+                </li>
+              )
+            })}
           </ul>
 
           {/* Desktop CTA */}
@@ -146,7 +227,7 @@ function NavLink({ href, label, active = false }: { href: string; label: string;
       aria-current={active ? 'page' : undefined}
     >
       {label}
-      {/* Underline: always visible when active, animated on hover otherwise */}
+      {/* Underline — full width when active, animates in on hover otherwise */}
       <span
         className={[
           'absolute -bottom-0.5 left-[7px] h-px rounded-full transition-all duration-300',

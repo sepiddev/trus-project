@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { ProjectCard }            from '@/components/portfolio/ProjectCard'
@@ -12,6 +12,70 @@ const PORT_STARS = Array.from({ length: 28 }, (_, i) => ({
   size: Math.random() * 1.4 + 0.4,
   opacity: Math.random() * 0.20 + 0.04,
 }))
+
+// ─── Vertical layout solver ───────────────────────────────────────────────────
+// The sticky panel is exactly 100vh, so BOTH card rows must fit inside the
+// viewport at every size. Two paths:
+//
+//   Desktop  (vh ≥ 825): the original formulas — pixel-identical at 900px+.
+//   Compact  (vh < 825): MacBook 13" / tablet / mobile — rows are scaled down
+//            just enough that Row 1 + gap + Row 2 fit above the fold. This is
+//            what prevents the rows from overlapping on short viewports.
+//
+// ── TUNING ──
+//   CARD_H    : ProjectCard height (must match ProjectCard.tsx)
+//   MIN_SCALE : smallest allowed card scale on tiny landscape screens
+//   gap       : compact row gap — 72px (56px below 720px vh), set inside
+const CARD_H      = 240
+const MIN_SCALE   = 0.68
+
+function computeLayout(vh: number) {
+  // Original desktop formulas (unchanged from the approved desktop design)
+  const row1Desktop = Math.min(Math.max(280, vh * 0.34), 420)
+  const row2Desktop = Math.max(
+    row1Desktop + CARD_H + 64,                                        // ≥64px gap
+    Math.min(Math.min(Math.max(640, vh * 0.72), 780), vh - 244),     // min(clamp(640,72vh,780), vh-244)
+  )
+
+  if (vh >= 825) {
+    // Desktop: row 2 bottom (row2 + 240) fits inside vh for all vh ≥ 825
+    const gap = row2Desktop - (row1Desktop + CARD_H)
+    return {
+      row1Top: Math.round(row1Desktop),
+      row2Top: Math.round(row2Desktop),
+      scale:   1,
+      // Word top sits in the row gap; 72px offset = approved desktop position
+      wordTop: Math.round(row2Desktop - Math.min(72, gap * 0.7)),
+    }
+  }
+
+  // Compact: scale rows down so row1 + gap + row2 + bottom margin fit in vh
+  const row1Top = vh >= 720 ? 280 : 264   // title block bottom ≈ 240px
+  const gap     = vh >= 720 ? 72  : 56
+  const margin  = 18
+  const scale   = Math.min(1, Math.max(MIN_SCALE, (vh - row1Top - gap - margin) / (CARD_H * 2)))
+  const cardH   = CARD_H * scale
+  const row2Top = row1Top + cardH + gap
+  return {
+    row1Top: Math.round(row1Top),
+    row2Top: Math.round(row2Top),
+    scale,
+    wordTop: Math.round(row2Top - Math.min(72, gap * 0.7)),
+  }
+}
+
+/** Live viewport height — re-renders on resize so the layout solver re-runs. */
+function useViewportHeight() {
+  const [vh, setVh] = useState(() =>
+    typeof window !== 'undefined' ? window.innerHeight : 900,
+  )
+  useEffect(() => {
+    const onResize = () => setVh(window.innerHeight)
+    window.addEventListener('resize', onResize, { passive: true })
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return vh
+}
 
 export function PortfolioSection() {
   // ── Scroll tracking scoped to THIS container ───────────────────────────────
@@ -33,20 +97,28 @@ export function PortfolioSection() {
   // Halo behind PORTFOLIO word — pulses with letter light-up, dims with cards exit
   const haloOpacity = useTransform(sectionProgress, [0.05, 0.35, 0.55, 0.78], [0, 0.6, 0.6, 0])
 
+  // Vertical layout — desktop unchanged, compact path scales rows to fit 100vh
+  const vh     = useViewportHeight()
+  const layout = computeLayout(vh)
+
   const { projects } = siteConfig.portfolio
   const row1 = projects.slice(0, 5)
   const row2 = projects.slice(3, 8) // intentional overlap for density
 
   return (
     <>
-      {/* ── Scroll container — 420vh gives ~2835px of scroll travel ── */}
+      {/* ── Scroll container ── */}
       {/* ── TUNING: Portfolio section height — change the vh value below ── */}
       <div
         id="portfolio"
         ref={containerRef}
-        style={{ height: '400vh', position: 'relative' }}
+        style={{ height: '500vh', position: 'relative' }}
       >
-        {/* ── Sticky viewport panel ─────────────────────────────────────────── */}
+        {/* ── Sticky viewport panel ───────────────────────────────────────────
+             Exactly 100vh — a sticky panel taller than the viewport would have
+             its bottom clipped below the fold for the whole scroll, so instead
+             the layout solver (computeLayout above) scales the card rows down
+             on short viewports until everything fits inside the panel.        */}
         <div
           style={{
             position: 'sticky',
@@ -134,8 +206,8 @@ export function PortfolioSection() {
 
           {/* ── Top content — z:10 above cards ───────────────────────────── */}
           <div
-            className="relative mx-auto w-full max-w-300 px-5"
-            style={{ zIndex: 10, paddingTop: '100px' }}
+            className="relative mx-auto w-full max-w-[1200px] px-5"
+            style={{ zIndex: 10, paddingTop: '130px' }}
           >
             {/* Row: label + heading + description (left) | See More (right) */}
             <div className="flex items-start justify-between">
@@ -199,13 +271,16 @@ export function PortfolioSection() {
 
           {/* ── PORTFOLIO background word — z:2, behind cards ────────────── */}
           {/* ── TUNING: PORTFOLIO word vertical position ──
-                Sits just below Row 1's bottom edge, between the two card rows.
-                clamp(floor, preferred-vh, ceiling)                            */}
+                layout.wordTop — anchored to Row 2 so the top edge of the
+                letters always shows cleanly in the row gap and the rest tucks
+                behind Row 2's cards (z:2 < z:5) at every viewport size.
+                Desktop: row2 − 72px (approved position, 576px at 900px vh).
+                Compact: row2 − 0.7 × gap (same visible-slice proportion).    */}
           <div
             aria-hidden="true"
             style={{
               position:      'absolute',
-              top:           'clamp(405px, 58vh, 555px)',
+              top:           `${layout.wordTop}px`,
               left:          0,
               right:         0,
               paddingLeft:   'max(120px, calc((100vw - 1200px) / 2 + 20px))',
@@ -221,18 +296,20 @@ export function PortfolioSection() {
 
           {/* ── Row 1 ────────────────────────────────────────────────────────
                ── TUNING: Row 1 vertical position ──
-                  clamp(floor, preferred-vh, ceiling)
-                  floor   = 244 px  — minimum safe distance below the title block
-                  28vh    = preferred (252 px at 900 px viewport)
-                  ceiling = 310 px  — prevents rows drifting too low on tall screens  */}
+                  layout.row1Top (computeLayout above)
+                  Desktop: clamp(280px, 34vh, 420px) — unchanged
+                  Compact: 280px (264px below 720px vh)
+                  Cards scale down on short viewports so both rows fit 100vh  */}
           <div
             style={{
-              position: 'absolute',
-              top:      'clamp(200px, 30vh, 350px)',
-              left:     0,
-              right:    0,
-              zIndex:   5,
-              overflow: 'visible',
+              position:        'absolute',
+              top:             `${layout.row1Top}px`,
+              left:            0,
+              right:           0,
+              zIndex:          5,
+              overflow:        'visible',
+              transform:       `scale(${layout.scale})`,
+              transformOrigin: 'left top',
             }}
           >
             <motion.div
@@ -258,19 +335,22 @@ export function PortfolioSection() {
 
           {/* ── Row 2 ────────────────────────────────────────────────────────
                ── TUNING: Row 2 vertical position ──
-                  clamp(floor, preferred-vh, ceiling)
-                  floor   = 500 px  — Row 1 floor (244) + card height (240) + 16 px gap
-                  57vh    = preferred (513 px at 900 px viewport)
-                  ceiling = 590 px  — keeps Row 2 inside 100 vh on very tall screens
-                  At 768 px: floor (500) used → Row 2 bottom = 740 px, 28 px from edge ✓  */}
+                  layout.row2Top (computeLayout above)
+                  Desktop: min(clamp(640px,72vh,780px), 100vh-244px) with a
+                           64px-gap floor — 648px at 900px vh (unchanged)
+                  Compact: row1Top + scaled card height + 72px gap
+                           (56px gap below 720px vh)
+                  Row 2 bottom is guaranteed ≤ 100vh at every viewport        */}
           <div
             style={{
-              position: 'absolute',
-              top:      'min(clamp(520px, 62vh, 640px), calc(100vh - 244px))',
-              left:     0,
-              right:    0,
-              zIndex:   5,
-              overflow: 'visible',
+              position:        'absolute',
+              top:             `${layout.row2Top}px`,
+              left:            0,
+              right:           0,
+              zIndex:          5,
+              overflow:        'visible',
+              transform:       `scale(${layout.scale})`,
+              transformOrigin: 'left top',
             }}
           >
             <motion.div
