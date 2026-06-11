@@ -46,15 +46,30 @@ export function PortfolioSection() {
         ref={containerRef}
         style={{ height: '500vh', position: 'relative' }}
       >
-        {/* ── Sticky viewport panel ─────────────────────────────────────────── */}
+        {/* ── Sticky viewport panel ───────────────────────────────────────────
+             Row layout is driven by two CSS custom properties so Row 2 can
+             never overlap Row 1 regardless of viewport height:
+
+               --row1-top : clamp(280px, 34vh, 420px)
+               --row2-top : the LOWER of
+                            a) desktop position  min(clamp(640px,72vh,780px), 100vh-244px)
+                            b) chained minimum   row1-top + 240px card + 64px gap
+                            → max(a, b) guarantees ≥ 64px between the rows.
+
+             Panel height grows past 100vh only when Row 2 wouldn't fit
+             (laptop 13" / tablet) — on desktop ≥ 900px tall it stays 100vh.   */}
         <div
           style={{
+            '--row1-top': 'clamp(280px, 34vh, 420px)',
+            '--row2-top':
+              'max(calc(var(--row1-top) + 304px), ' +
+              'min(clamp(640px, 72vh, 780px), calc(100vh - 244px)))',
             position: 'sticky',
             top:      0,
-            height:   '100vh',
+            height:   'max(100vh, calc(var(--row2-top) + 252px))',
             overflow: 'hidden',
             background: '#ffffff',
-          }}
+          } as React.CSSProperties}
         >
 
           {/* ── Background layers ─────────────────────────────────────────── */}
@@ -199,17 +214,16 @@ export function PortfolioSection() {
 
           {/* ── PORTFOLIO background word — z:2, behind cards ────────────── */}
           {/* ── TUNING: PORTFOLIO word vertical position ──
-                Sits in the gap between Row 1's bottom edge and Row 2.
-                Row 1 bottom ≈ Row1.top + 240 px (card height).
-                clamp(floor, preferred-vh, ceiling)
-                floor   = 490 px
-                64vh    = preferred (576 px at 900 px, 691 px at 1080 px)
-                ceiling = 680 px                                              */}
+                Anchored to Row 2 (not the viewport) so it always renders the
+                same way: the top edge of the letters shows in the row gap and
+                the rest tucks behind Row 2's cards (z:2 < z:5).
+                72 px offset reproduces the previous desktop position exactly
+                (Row 2 at 648 px → word at 576 px = old 64vh @ 900 px vh).     */}
           <div
             aria-hidden="true"
             style={{
               position:      'absolute',
-              top:           'clamp(490px, 64vh, 680px)',
+              top:           'calc(var(--row2-top) - 72px)',
               left:          0,
               right:         0,
               paddingLeft:   'max(120px, calc((100vw - 1200px) / 2 + 20px))',
@@ -225,14 +239,14 @@ export function PortfolioSection() {
 
           {/* ── Row 1 ────────────────────────────────────────────────────────
                ── TUNING: Row 1 vertical position ──
-                  clamp(floor, preferred-vh, ceiling)
-                  floor   = 260 px  — min safe distance below the title block
+                  --row1-top on the sticky panel: clamp(280px, 34vh, 420px)
+                  floor   = 280 px  — clears the title block (~230 px tall)
                   34vh    = preferred (306 px at 900 px, 367 px at 1080 px)
                   ceiling = 420 px  — cap on tall/wide screens               */}
           <div
             style={{
               position: 'absolute',
-              top:      'clamp(260px, 34vh, 420px)',
+              top:      'var(--row1-top)',
               left:     0,
               right:    0,
               zIndex:   5,
@@ -262,16 +276,17 @@ export function PortfolioSection() {
 
           {/* ── Row 2 ────────────────────────────────────────────────────────
                ── TUNING: Row 2 vertical position ──
-                  clamp(floor, preferred-vh, ceiling)
-                  floor   = 640 px  — Row 1 floor + 240 + ~140 px gap
-                  72vh    = preferred (648 px at 900 px, 778 px at 1080 px)
-                  ceiling = 780 px
-                  calc(100vh - 244px) safety cap ensures row bottom stays inside vh
-                  Gap between rows: ≈102 px at 900 px, ≈171 px at 1080 px        */}
+                  --row2-top on the sticky panel — the LOWER of:
+                  a) desktop position: min(clamp(640px,72vh,780px), 100vh-244px)
+                     (648 px at 900 px vh, 778 px at 1080 px vh — unchanged)
+                  b) chained minimum: row1-top + 240 px card + 64 px gap
+                     (engages on laptop/tablet, guarantees rows never overlap)
+                  Gap between rows: 64 px floor → ≈102 px at 900 px,
+                  ≈171 px at 1080 px (identical to previous desktop values)     */}
           <div
             style={{
               position: 'absolute',
-              top:      'min(clamp(640px, 72vh, 780px), calc(100vh - 244px))',
+              top:      'var(--row2-top)',
               left:     0,
               right:    0,
               zIndex:   5,
