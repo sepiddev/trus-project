@@ -24,10 +24,10 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
 
       {/* ── Main content grid ── */}
       <div
-        className="relative z-10 mx-auto w-full max-w-[1200px] px-5 flex items-center"
+        className="relative z-10 mx-auto w-full max-w-300 px-5 flex items-center"
         style={{ minHeight: '100svh', paddingTop: '88px', paddingBottom: '80px' }}
       >
-        <div className="grid w-full grid-cols-1 lg:grid-cols-[42%_58%] items-center gap-4">
+        <div className="grid w-full grid-cols-1 lg:grid-cols-[65%_80%] items-center gap-4">
 
           {/* ═══════════════════════════════════════════════════════════════
               LEFT COLUMN — copy (unchanged)
@@ -85,14 +85,14 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
               <Button
                 variant="ghost"
                 href={data.cta.secondary.href}
-                className="h-[44px] w-[131px]"
+                className="h-11 w-32.75"
               >
                 {data.cta.secondary.label}
               </Button>
               <Button
                 variant="gradient"
                 href={data.cta.primary.href}
-                className="h-[44px] w-[207px]"
+                className="h-11 w-51.75"
               >
                 {data.cta.primary.label}
               </Button>
@@ -106,7 +106,12 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
           ══════════════════════════════════════════════════════════════════ */}
           <motion.div
             className="hidden lg:flex items-center justify-center"
-            style={{ opacity: orbitOpacity, x: 80 }}
+            style={{
+              opacity: orbitOpacity,
+              x: 20,
+              scale: 1.45,
+              transformOrigin: 'center right',
+            }}
           >
             <HeroVideo />
           </motion.div>
@@ -144,8 +149,8 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
  */
 function HeroVideo() {
   // Horizontal and vertical fade gradients — each fades its respective edges
-  const maskH = 'linear-gradient(to right,  transparent 0%, black 22%, black 78%, transparent 100%)'
-  const maskV = 'linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%)'
+  const maskH = 'linear-gradient(to right,  transparent 0%, black 52%, black 78%, transparent 100%)'
+  const maskV = 'linear-gradient(to bottom, transparent 0%, black 15%, black 75%, transparent 100%)'
 
   return (
     // No maxWidth, no background, no border, no overflow:hidden.
@@ -163,17 +168,17 @@ function HeroVideo() {
         aria-hidden="true"
         style={{
           position:   'absolute',
-          top:        '-45%',
-          left:       '-32%',
-          right:      '-32%',
+          top:        '-28%',
+          left:       '-35%',
+          right:      '-28%',
           bottom:     '-45%',
           background:
-            'radial-gradient(ellipse 64% 64% at 52% 50%,' +
+            'radial-gradient(ellipse 55% 55% at 52% 45%,' +
             ' rgba(118,42,240,0.55) 0%,' +
             ' rgba(88,18,198,0.26) 38%,' +
-            ' rgba(55,8,145,0.10) 62%,' +
-            ' transparent 80%)',
-          filter:     'blur(62px)',
+            // ' rgba(55,8,145,0.10) 75%,' +
+            ' transparent 70%)',
+          filter:     'blur(32px)',
           zIndex:     0,
         }}
       />
@@ -188,8 +193,9 @@ function HeroVideo() {
           position:  'relative',
           zIndex:    1,
           display:   'block',
+          transform: 'translateY(-20px)',
           // 30 % size increase: 130 % width, centred via negative left margin
-          width:              '130%',
+          width:              '190%',
           marginLeft:         '-15%',
           height:             'auto',
           // Screen blend — makes the video's dark background pixels
@@ -202,7 +208,7 @@ function HeroVideo() {
           maskComposite:       'intersect',         // standard
         }}
       >
-        <source src="/hero-placeholder.mp4" type="video/mp4" />
+        <source src="/Trus Hero mp4_hdv0.mp4" type="video/mp4" />
       </video>
 
     </div>
@@ -213,7 +219,7 @@ function HeroVideo() {
 function CursorBlink() {
   return (
     <motion.span
-      className="inline-block align-middle rounded-[2px] ml-1"
+      className="inline-block align-middle rounded-xs ml-1"
       style={{
         width:      '3px',
         height:     '0.82em',

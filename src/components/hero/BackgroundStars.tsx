@@ -45,7 +45,7 @@ export function BackgroundStars() {
       ))}
 
       {/* ── Planet horizon — dominant purple sphere at bottom-right ── */}
-      <div
+      {/* <div
         className="absolute"
         style={{
           bottom: '-18%',
@@ -54,7 +54,7 @@ export function BackgroundStars() {
           height: '80%',
           background: [
             'radial-gradient(ellipse 72% 72% at 55% 92%,',
-            '  rgba(105,28,195,0.82) 0%,',
+            '  rgba(105,28,195,0.18) 0%,',
             '  rgba(78,18,155,0.58) 15%,',
             '  rgba(52,10,115,0.32) 35%,',
             '  rgba(28,4,68,0.14) 55%,',
@@ -62,9 +62,9 @@ export function BackgroundStars() {
           ].join(''),
           borderRadius: '50%',
         }}
-      />
+      /> */}
       {/* Bright inner core glow of planet */}
-      <div
+      {/* <div
         className="absolute"
         style={{
           bottom: '-5%',
@@ -72,10 +72,10 @@ export function BackgroundStars() {
           right: '8%',
           height: '45%',
           background:
-            'radial-gradient(ellipse 60% 60% at 52% 95%, rgba(145,50,240,0.45) 0%, rgba(100,30,185,0.22) 30%, transparent 60%)',
+            'radial-gradient(ellipse 60% 60% at 52% 95%, rgba(145,50,240,0.10) 0%, rgba(100,30,185,0.22) 30%, transparent 60%)',
           filter: 'blur(8px)',
         }}
-      />
+      /> */}
 
       {/* Ambient right-side glow (sits behind the T) */}
       <div
