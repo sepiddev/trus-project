@@ -1,8 +1,17 @@
 import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { usePageLoaded } from '@/hooks/usePageLoaded'
+import { useLoaderGate } from '@/hooks/useLoaderGate'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { EASE_PREMIUM } from '@/motion/variants'
+
+export interface PreloaderProps {
+  /**
+   * Becomes `true` once the hero video can play through. The loader waits for
+   * this (plus a minimum display time) before fading out, so the hero is live
+   * — not a frozen first frame — the moment the loader disappears.
+   */
+  ready?: boolean
+}
 
 /**
  * Full-screen initial preloader.
@@ -10,26 +19,26 @@ import { EASE_PREMIUM } from '@/motion/variants'
  * Renders a violet gradient backdrop with an outline-only "TRUS" wordmark.
  * A bright white stroke-dash glows and travels along the letter contours —
  * giving the impression of light scanning *through* the outline while the
- * letters themselves stay fixed. Fades out smoothly once the page has loaded.
+ * letters themselves stay fixed. Fades out smoothly once the hero is ready.
  *
- * Self-contained: tracks its own load state and locks body scroll while
+ * Self-contained: tracks its own dismissal timing and locks body scroll while
  * visible, so mounting it once near the app root is all that's required.
  */
-export function Preloader() {
-  const loaded         = usePageLoaded()
+export function Preloader({ ready = false }: PreloaderProps) {
+  const done           = useLoaderGate({ ready })
   const reducedMotion  = useReducedMotion()
 
   // Lock scroll while the loader covers the page.
   useEffect(() => {
-    if (loaded) return
+    if (done) return
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = previous }
-  }, [loaded])
+  }, [done])
 
   return (
     <AnimatePresence>
-      {!loaded && (
+      {!done && (
         <motion.div
           key="trus-preloader"
           role="status"

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { motion, MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { parseHeadline } from '@/utils/text'
@@ -9,10 +10,12 @@ export interface HeroSectionProps {
   data?: typeof siteConfig.hero
   /** Scroll-driven opacity — fades the right visual out as the hero exits. */
   orbitOpacity?: MotionValue<number>
+  /** Fired once the hero video is buffered enough to play through. */
+  onVideoReady?: () => void
 }
 
 // ─── HeroSection ──────────────────────────────────────────────────────────────
-export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectionProps) {
+export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady }: HeroSectionProps) {
   return (
     <section
       className="relative overflow-hidden"
@@ -113,7 +116,7 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
               transformOrigin: 'center right',
             }}
           >
-            <HeroVideo />
+            <HeroVideo onReady={onVideoReady} />
           </motion.div>
 
         </div>
@@ -147,7 +150,46 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity }: HeroSectio
  *            Combined with mix-blend-mode: screen (dark pixels → transparent)
  *            the edges dissolve completely — no rectangular frame.
  */
-function HeroVideo() {
+function HeroVideo({ onReady }: { onReady?: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  // Signal readiness only once the video is buffered enough to play through,
+  // so the loader hands off to a live galaxy rather than a frozen first frame.
+  // Guards: a warm-cache check (events may have fired pre-mount), an `error`
+  // path so a failed/404 video never blocks the loader, and a `canplay` grace
+  // for conservative browsers that delay/skip `canplaythrough`.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !onReady) return
+
+    let settled = false
+    let graceTimer: number | undefined
+    const settle = () => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(graceTimer)
+      onReady()
+    }
+
+    // HAVE_ENOUGH_DATA already (e.g. cached on reload / HMR).
+    if (video.readyState >= 4) {
+      settle()
+      return
+    }
+
+    const onCanPlay = () => { graceTimer = window.setTimeout(settle, 2500) }
+
+    video.addEventListener('canplaythrough', settle)
+    video.addEventListener('canplay', onCanPlay)
+    video.addEventListener('error', settle)
+    return () => {
+      window.clearTimeout(graceTimer)
+      video.removeEventListener('canplaythrough', settle)
+      video.removeEventListener('canplay', onCanPlay)
+      video.removeEventListener('error', settle)
+    }
+  }, [onReady])
+
   // Horizontal and vertical fade gradients — each fades its respective edges
   const maskH = 'linear-gradient(to right,  transparent 0%, black 52%, black 78%, transparent 100%)'
   const maskV = 'linear-gradient(to bottom, transparent 0%, black 15%, black 75%, transparent 100%)'
@@ -185,10 +227,12 @@ function HeroVideo() {
 
       {/* Video — 30 % wider than column, centred, all four edges faded */}
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
+        preload="auto"
         style={{
           position:  'relative',
           zIndex:    1,
@@ -208,7 +252,7 @@ function HeroVideo() {
           maskComposite:       'intersect',         // standard
         }}
       >
-        <source src="/Trus Hero mp4_hdv0.mp4" type="video/mp4" />
+        <source src="/hero-galaxy.mp4" type="video/mp4" />
       </video>
 
     </div>
