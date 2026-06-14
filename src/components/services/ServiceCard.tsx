@@ -12,7 +12,7 @@ export function ServiceCard({ icon, title, description }: ServiceCardProps) {
       style={{
         width:        '337px',
         minWidth:     '337px',
-        height:       '240px',
+        height:       '220px',
         borderRadius: '16px',
         padding:      '24px',
         background:   '#FFFFFF',

@@ -187,7 +187,7 @@ export function WhyUsSection() {
 
           {/* ── Main content ──────────────────────────────────────────── */}
           <div
-            className="relative z-10 mx-auto w-full max-w-[1200px] px-5"
+            className="relative z-10 mx-auto w-full max-w-300 px-5"
             style={{
               height:         '100%',
               display:        'flex',
@@ -224,7 +224,7 @@ export function WhyUsSection() {
                     lineHeight:    1.12,
                     letterSpacing: '-0.01em',
                     color:         '#FFFFFF',
-                    margin:        0,
+                    margin:        20,
                     textAlign:     'center',
                   }}
                 >

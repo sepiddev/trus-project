@@ -4,6 +4,7 @@ import { FadeIn } from '@/components/motion/FadeIn'
 import { TeamMemberCard, type CardState } from '@/components/team/TeamMemberCard'
 import { TeamInfoPanel } from '@/components/team/TeamInfoPanel'
 
+
 // ── Type helpers ──────────────────────────────────────────────────────────────
 type Member = (typeof siteConfig.team.members)[number]
 
@@ -220,8 +221,8 @@ export function TeamSection() {
         background:    'var(--color-brand-bg)',
         position:      'relative',
         overflow:      'hidden',
-        paddingTop:    '120px',
-        paddingBottom: '120px',
+        paddingTop:    '180px',
+        paddingBottom: '180px',
       }}
     >
       {/* ── Purple radial glow ── */}

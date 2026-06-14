@@ -11,7 +11,7 @@ import { TestimonialCard } from '@/components/testimonials/TestimonialCard'
 const CARD_LAYOUT = [
   { left: '11%', top: '7vh',  inputRange: [0.04, 0.32] as [number, number] },  // 1 upper-left
   { left: '66%', top: '5vh',  inputRange: [0.07, 0.35] as [number, number] },  // 2 upper-right
-  { left: '45%', top: '36vh', inputRange: [0.10, 0.38] as [number, number] },  // 3 center
+  { left: '39%', top: '36vh', inputRange: [0.10, 0.38] as [number, number] },  // 3 center
   { left: '11%', top: '66vh', inputRange: [0.13, 0.41] as [number, number] },  // 4 lower-left
   { left: '66%', top: '68vh', inputRange: [0.16, 0.44] as [number, number] },  // 5 lower-right
 ] as const
@@ -46,36 +46,27 @@ interface AnimatedCardProps {
 }
 
 function AnimatedCard({ index, scrollYMV, containerRef, isDesktop, children }: AnimatedCardProps) {
-  const layout  = CARD_LAYOUT[index]
-  const [rs, re] = layout.inputRange
-  const midPt   = rs + (re - rs) * 0.4
-  const prog    = makeProgressFn(containerRef)
+  const layout = CARD_LAYOUT[index]
+  const [rs] = layout.inputRange
+  const prog = makeProgressFn(containerRef)
 
-  // y: enter from +150vh → pass through composition (y=0) → exit to -130vh
-  // Cards don't settle — they flow continuously upward through the scene.
-  // Section is 500vh so progress advances slowly → cinematic speed.
-  const EXIT_START = 0.54  // all cards begin exiting together
-  const EXIT_END   = 0.93  // all cards fully off-screen top
   const yMV = useTransform(scrollYMV, (y) => {
-    const p  = prog(y)
+    const p = prog(y)
     const vh = window.innerHeight
-    if (p <= re) {
-      // Enter phase: +150vh → 0
-      const t = Math.max(0, Math.min(1, (p - rs) / (re - rs)))
-      return (1 - t) * (1.5 * vh)
-    }
-    if (p >= EXIT_START) {
-      // Exit phase: 0 → -130vh (clears even the lowest card at top:68vh)
-      const t = Math.max(0, Math.min(1, (p - EXIT_START) / (EXIT_END - EXIT_START)))
-      return -t * (1.3 * vh)
-    }
-    // Brief composition hold between last card entering (0.56) and exit start (0.57)
-    return 0
+
+    const t = Math.max(0, Math.min(1, (p - rs) / (1 - rs)))
+
+    // continuous movement: enters from bottom and keeps going out from top
+    return (0.95 - t * 2.15) * vh
   })
 
-  // opacity: fades in during the first 40% of its travel window
   const opMV = useTransform(scrollYMV, (y) => {
-    return Math.max(0, Math.min(1, (prog(y) - rs) / (midPt - rs)))
+    const p = prog(y)
+
+    const fadeIn = Math.max(0, Math.min(1, (p - rs) / 0.16))
+    const fadeOut = Math.max(0, Math.min(1, (1 - p) / 0.18))
+
+    return Math.min(fadeIn, fadeOut)
   })
 
   if (!isDesktop) return null
@@ -84,11 +75,11 @@ function AnimatedCard({ index, scrollYMV, containerRef, isDesktop, children }: A
     <motion.div
       style={{
         position: 'absolute',
-        left:     layout.left,
-        top:      layout.top,
-        y:        yMV,
-        opacity:  opMV,
-        zIndex:   4,
+        left: layout.left,
+        top: layout.top,
+        y: yMV,
+        opacity: opMV,
+        zIndex: 4,
       }}
     >
       {children}
@@ -107,41 +98,38 @@ function MobileStack({ items, scrollYMV, containerRef }: MobileStackProps) {
   const prog = makeProgressFn(containerRef)
 
   const yMV = useTransform(scrollYMV, (y) => {
-    const p  = prog(y)
+    const p = prog(y)
     const vh = window.innerHeight
-    if (p <= 0.60) {
-      // Enter: +80vh → 0
-      const t = Math.max(0, Math.min(1, (p - 0.05) / (0.60 - 0.05)))
-      return (1 - t) * (0.8 * vh)
-    }
-    if (p >= 0.65) {
-      // Exit: stack top (44vh) + full stack height (~1250px) must clear the top.
-      // 2.5 * vh is enough to push even the last card above the viewport.
-      const t = Math.max(0, Math.min(1, (p - 0.65) / (0.94 - 0.65)))
-      return -t * (2.5 * vh)
-    }
-    return 0
+
+    const t = Math.max(0, Math.min(1, (p - 0.05) / 0.95))
+
+    return (0.6 - t * 2) * vh
   })
 
   const opMV = useTransform(scrollYMV, (y) => {
-    return Math.max(0, Math.min(1, (prog(y) - 0.05) / (0.30 - 0.05)))
+    const p = prog(y)
+
+    const fadeIn = Math.max(0, Math.min(1, (p - 0.05) / 0.18))
+    const fadeOut = Math.max(0, Math.min(1, (1 - p) / 0.18))
+
+    return Math.min(fadeIn, fadeOut)
   })
 
   return (
     <motion.div
       style={{
-        position:      'absolute',
-        top:           '44vh',
-        left:          0,
-        right:         0,
-        y:             yMV,
-        opacity:       opMV,
-        zIndex:        4,
-        display:       'flex',
+        position: 'absolute',
+        top: '44vh',
+        left: 0,
+        right: 0,
+        y: yMV,
+        opacity: opMV,
+        zIndex: 4,
+        display: 'flex',
         flexDirection: 'column',
-        alignItems:    'center',
-        gap:           '16px',
-        padding:       '0 16px',
+        alignItems: 'center',
+        gap: '16px',
+        padding: '0 16px',
       }}
     >
       {items.map((item) => (
@@ -197,6 +185,7 @@ export function TestimonialsSection() {
     return () => window.removeEventListener('scroll', update)
   }, [scrollYMV])
 
+  // eslint-disable-next-line react-hooks/refs
   const prog = makeProgressFn(containerRef)
 
   // Globe + header: fades 1→0 between progress 0.08 and 0.50
@@ -216,7 +205,7 @@ export function TestimonialsSection() {
     <div
       id="testimonials"
       ref={containerRef}
-      style={{ height: '500vh', position: 'relative' }}
+      style={{ height: isDesktop ? '170vh' : '160vh', position: 'relative' }}
     >
       {/* ── Sticky viewport panel ─────────────────────────────────────────── */}
       <div
