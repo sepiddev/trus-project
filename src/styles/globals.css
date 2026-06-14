@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 /* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+/* Colors + fonts below are the BUILD-TIME defaults (used to generate Tailwind
+   utilities and the first paint). They mirror src/config/theme.config.ts, which
+   re-applies them at runtime via applyTheme() and is the place to rebrand.
+   Structural tokens (radius, type-scale, shadows) live only here. */
 @theme {
-  /* Colors */
+  /* Colors — mirror of themeConfig.colors */
   --color-brand-bg:           #07070D;
   --color-brand-surface:      #0F0F18;
   --color-brand-surface-2:    #141420;

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { motion, MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
+import { brandConfig } from '@/config/brand.config'
 import { parseHeadline } from '@/utils/text'
 import { Button } from '@/components/ui/Button'
 import { FadeIn } from '@/components/motion/FadeIn'
@@ -252,7 +253,7 @@ function HeroVideo({ onReady }: { onReady?: () => void }) {
           maskComposite:       'intersect',         // standard
         }}
       >
-        <source src="/hero-galaxy.mp4" type="video/mp4" />
+        <source src={brandConfig.assets.heroVideo} type="video/mp4" />
       </video>
 
     </div>

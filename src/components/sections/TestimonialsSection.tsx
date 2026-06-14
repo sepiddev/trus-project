@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import type { MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
+import { brandConfig } from '@/config/brand.config'
 import { TestimonialCard } from '@/components/testimonials/TestimonialCard'
 
 // ── Card layout config (desktop) ──────────────────────────────────────────────
@@ -291,7 +292,7 @@ export function TestimonialsSection() {
           >
             <video
               ref={globeVideoRef}
-              src="/globe.mp4"
+              src={brandConfig.assets.globeVideo}
               autoPlay
               loop
               muted

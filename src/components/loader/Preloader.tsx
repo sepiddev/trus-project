@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useLoaderGate } from '@/hooks/useLoaderGate'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { EASE_PREMIUM } from '@/motion/variants'
+import { brandConfig } from '@/config/brand.config'
 
 export interface PreloaderProps {
   /**
@@ -43,7 +44,7 @@ export function Preloader({ ready = false }: PreloaderProps) {
           key="trus-preloader"
           role="status"
           aria-live="polite"
-          aria-label="Loading TruS ecosystem"
+          aria-label={`Loading ${brandConfig.name} ecosystem`}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: EASE_PREMIUM }}
@@ -79,7 +80,7 @@ export function Preloader({ ready = false }: PreloaderProps) {
               color:         'rgba(255,255,255,0.55)',
             }}
           >
-            Loading Ecosystem
+            {brandConfig.loadingLabel}
           </span>
         </motion.div>
       )}
@@ -157,7 +158,7 @@ function TrusOutline({ reducedMotion }: { reducedMotion: boolean }) {
 
       {/* Base: faint full outline, always visible. */}
       <text {...SHARED} stroke="rgba(255,255,255,0.22)" strokeWidth={1.5}>
-        TRUS
+        {brandConfig.wordmark}
       </text>
 
       {/* Traveling glow: bright dashes that scan along the letter contours. */}
@@ -172,7 +173,7 @@ function TrusOutline({ reducedMotion }: { reducedMotion: boolean }) {
         strokeDashoffset={reducedMotion ? 0 : undefined}
         opacity={reducedMotion ? 0.5 : 1}
       >
-        TRUS
+        {brandConfig.wordmark}
       </text>
     </svg>
   )

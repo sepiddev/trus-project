@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { motion, useMotionValue, useTransform, MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
+import { brandConfig } from '@/config/brand.config'
 import { FadeIn } from '@/components/motion/FadeIn'
 import { parseHeadline } from '@/utils/text'
 
@@ -43,7 +44,7 @@ export function AboutSection({
       id="about"
       ref={ref}
       className="relative overflow-hidden"
-      aria-label="About TruS"
+      aria-label={`About ${brandConfig.name}`}
     >
       {/* ── Background layer ───────────────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -259,7 +260,7 @@ export function AboutSection({
                   {/* Team image — hidden via onError when file is absent */}
                   <motion.img
                     src={data.image}
-                    alt="TruS team at work"
+                    alt={`${brandConfig.name} team at work`}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: imageFilter }}
                     loading="lazy"
                     onError={(e) => { e.currentTarget.style.display = 'none' }}

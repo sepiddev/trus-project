@@ -28,7 +28,7 @@
 import { useRef }                        from 'react'
 import { motion, useInView }             from 'framer-motion'
 import { siteConfig }                    from '@/config/site.config'
-import trusLogo                          from '@/assets/logo.png'
+import { brandConfig }                   from '@/config/brand.config'
 
 // ─── Shared style tokens ──────────────────────────────────────────────────────
 
@@ -124,7 +124,7 @@ export function FooterSection() {
             scaleY:        1.12,          // +~20px visual height at max font-size; no width change
           }}
         >
-          TRUS
+          {brandConfig.wordmark}
         </motion.span>
       </div>
 
@@ -140,8 +140,8 @@ export function FooterSection() {
           {/* Logo + tagline */}
           <div>
             <img
-              src={trusLogo}
-              alt="TruS"
+              src={brandConfig.logo}
+              alt={brandConfig.name}
               style={{ height: '44px', width: 'auto', display: 'block', marginBottom: '20px' }}
             />
             <p style={{
@@ -226,7 +226,7 @@ export function FooterSection() {
             color:    'rgba(255,255,255,0.40)',
             margin:   0,
           }}>
-            © {new Date().getFullYear()} TruS. All rights reserved.
+            © {new Date().getFullYear()} {brandConfig.name}. All rights reserved.
           </p>
 
           {/* Social links */}

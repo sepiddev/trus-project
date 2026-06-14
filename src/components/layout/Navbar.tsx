@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
+import { brandConfig } from '@/config/brand.config'
 import { Button } from '@/components/ui/Button'
 import { EASE_PREMIUM, DURATION_MD, DURATION_SM } from '@/motion/variants'
-import trusLogo from '@/assets/logo.png'
 
 // ─── Scroll-spy ───────────────────────────────────────────────────────────────
 // IDs of every section that has a corresponding nav link.
@@ -122,11 +122,11 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
           <a
             href="/"
             className="shrink-0 focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            aria-label="TruS — home"
+            aria-label={`${brandConfig.name} — home`}
           >
             <img
-              src={trusLogo}
-              alt="TruS"
+              src={brandConfig.logo}
+              alt={brandConfig.name}
               style={{ height: '32px', width: 'auto', display: 'block' }}
             />
           </a>
