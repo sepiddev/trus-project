@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useScroll, useTransform } from 'framer-motion'
 import { Preloader }                   from '@/components/loader/Preloader'
 import { Navbar }                      from '@/components/layout/Navbar'
@@ -23,6 +24,10 @@ export default function App() {
   // WhyUsSection and PortfolioSection own their scroll progress internally.
   const { scrollY } = useScroll()
 
+  // Gate the preloader on real hero-video readiness (canplaythrough), so it
+  // fades out only when the galaxy is actually playing — not a frozen frame.
+  const [heroVideoReady, setHeroVideoReady] = useState(false)
+
   // ── Hero galaxy opacity ───────────────────────────────────────────────────
   // Fades the entire orbital galaxy out as the user scrolls past the hero.
   const heroOrbitOpacity = useTransform(scrollY, [0, 280], [1, 0])
@@ -33,11 +38,11 @@ export default function App() {
 
   return (
     <div className="bg-brand-bg min-h-screen font-body antialiased">
-      <Preloader />
+      <Preloader ready={heroVideoReady} />
 
       <Navbar />
 
-      <HeroSection  orbitOpacity={heroOrbitOpacity} />
+      <HeroSection  orbitOpacity={heroOrbitOpacity} onVideoReady={() => setHeroVideoReady(true)} />
       <AboutSection imageGlowIntensity={imageGlowIntensity} />
 
       {/* Portfolio: self-contained sticky section — horizontal card parallax. */}
