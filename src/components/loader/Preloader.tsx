@@ -90,6 +90,13 @@ export function Preloader() {
  */
 const OUTLINE_FONT = "Arial, 'Helvetica Neue', Helvetica, sans-serif"
 
+// Travelling stroke-dash tuning. DASH + GAP define the repeat PERIOD; the scan
+// animates strokeDashoffset by exactly one PERIOD so the loop is seamless.
+const DASH_LENGTH   = 55
+const DASH_GAP      = 360
+const DASH_PERIOD   = DASH_LENGTH + DASH_GAP   // 415
+const SCAN_DURATION = 3                         // seconds per loop, linear
+
 function TrusOutline({ reducedMotion }: { reducedMotion: boolean }) {
   const SHARED = {
     x:                600,
@@ -121,31 +128,43 @@ function TrusOutline({ reducedMotion }: { reducedMotion: boolean }) {
         </filter>
       </defs>
 
+      {/* Continuous stroke-dash scan driven by a CSS keyframe animation.
+          `strokeDasharray` (DASH + GAP = PERIOD) repeats around each glyph
+          contour; animating `strokeDashoffset` by exactly one PERIOD makes the
+          bright segments travel along the outline and loop seamlessly. CSS
+          (vs. a JS/attribute animation) guarantees it runs continuously. */}
+      <style>{`
+        @keyframes trus-scan {
+          from { stroke-dashoffset: ${DASH_PERIOD}; }
+          to   { stroke-dashoffset: 0; }
+        }
+        .trus-scan-stroke {
+          animation: trus-scan ${SCAN_DURATION}s linear infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .trus-scan-stroke { animation: none; }
+        }
+      `}</style>
+
       {/* Base: faint full outline, always visible. */}
       <text {...SHARED} stroke="rgba(255,255,255,0.22)" strokeWidth={1.5}>
         TRUS
       </text>
 
-      {/* Traveling glow: bright dashes that scan along the letter contours.
-          `strokeDasharray` repeats around each glyph; animating the offset by
-          exactly one dash period gives a seamless loop. */}
-      <motion.text
+      {/* Traveling glow: bright dashes that scan along the letter contours. */}
+      <text
         {...SHARED}
+        className={reducedMotion ? undefined : 'trus-scan-stroke'}
         stroke="#ffffff"
         strokeWidth={2}
         strokeLinecap="round"
         filter="url(#trus-glow)"
-        strokeDasharray="55 360"
-        initial={false}
-        animate={reducedMotion ? { strokeDashoffset: 0, opacity: 0.5 } : { strokeDashoffset: [415, 0] }}
-        transition={
-          reducedMotion
-            ? { duration: 0 }
-            : { duration: 3, repeat: Infinity, ease: 'linear' }
-        }
+        strokeDasharray={`${DASH_LENGTH} ${DASH_GAP}`}
+        strokeDashoffset={reducedMotion ? 0 : undefined}
+        opacity={reducedMotion ? 0.5 : 1}
       >
         TRUS
-      </motion.text>
+      </text>
     </svg>
   )
 }
