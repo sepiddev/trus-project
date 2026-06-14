@@ -2,6 +2,16 @@ import { motion, MotionValue, useTransform } from 'framer-motion'
 
 const LETTERS = 'PORTFOLIO'.split('')
 
+/**
+ * These letters are rendered outline-only via `-webkit-text-stroke` (no fill),
+ * so every glyph contour is drawn. DM Sans (--font-hero) builds the "R" leg as
+ * a separate contour overlapping the bowl, which the stroke exposes as a stray
+ * diagonal line through the leg. Arial / Helvetica use merged contours, so the
+ * R reads clean. Keep this stack for the stroked word; do NOT revert to
+ * --font-hero (that token stays DM Sans for filled headings elsewhere).
+ */
+const OUTLINE_FONT = "Arial, 'Helvetica Neue', Helvetica, sans-serif"
+
 interface AnimatedPortfolioWordProps {
   /** Section scroll progress 0→1 (scoped to Portfolio container) */
   sectionProgress: MotionValue<number>
@@ -82,7 +92,7 @@ function MotionLetter({
         style={{
           color,
           display:         'block',
-          fontFamily:      'var(--font-hero)',
+          fontFamily:      OUTLINE_FONT,
           fontSize:        'clamp(100px, 14vw, 200px)',
           fontWeight:      700,
           lineHeight:      1,
@@ -104,7 +114,7 @@ function MotionLetter({
           display:         'block',
           color:           '#5B2BB9',
           opacity:         glowOpacity,
-          fontFamily:      'var(--font-hero)',
+          fontFamily:      OUTLINE_FONT,
           fontSize:        'clamp(100px, 14vw, 200px)',
           fontWeight:      700,
           lineHeight:      1,

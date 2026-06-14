@@ -1,4 +1,5 @@
 import { useScroll, useTransform } from 'framer-motion'
+import { Preloader }                   from '@/components/loader/Preloader'
 import { Navbar }                      from '@/components/layout/Navbar'
 import { HeroSection }                 from '@/components/sections/Hero'
 import { AboutSection }                from '@/components/sections/AboutSection'
@@ -32,6 +33,8 @@ export default function App() {
 
   return (
     <div className="bg-brand-bg min-h-screen font-body antialiased">
+      <Preloader />
+
       <Navbar />
 
       <HeroSection  orbitOpacity={heroOrbitOpacity} />
