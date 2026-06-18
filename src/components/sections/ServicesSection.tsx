@@ -180,9 +180,8 @@ export function ServicesSection() {
           <div style={{ paddingTop: '100px' }}>
             <FadeIn direction="up" delay={0.08}>
               <p
+                className="text-section-label"
                 style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '14px',
                   fontWeight: 400,
                   lineHeight: '20px',
                   color: '#9F7EE1',
@@ -197,10 +196,8 @@ export function ServicesSection() {
 
             <FadeIn direction="up" delay={0.18}>
               <h2
+                className="text-section-title"
                 style={{
-                  fontFamily: 'var(--font-hero)',
-                  fontSize: '32px',
-                  fontWeight: 700,
                   lineHeight: '67px',
                   color: '#FFFFFF',
                   margin: 0,
@@ -212,9 +209,8 @@ export function ServicesSection() {
 
             <FadeIn direction="up" delay={0.28}>
               <p
+                className="text-section-subtitle"
                 style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '16px',
                   fontWeight: 400,
                   lineHeight: '24px',
                   color: '#BFBFBF',

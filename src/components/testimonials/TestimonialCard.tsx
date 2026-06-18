@@ -68,6 +68,8 @@ export function TestimonialCard({ name, role, quote, avatar, style }: Testimonia
             alt={name}
             width={32}
             height={32}
+            loading="lazy"
+            decoding="async"
             style={{
               borderRadius: '50%',
               objectFit:    'cover',

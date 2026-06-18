@@ -113,8 +113,8 @@ export function AboutSection({
             {/* Eyebrow label */}
             <FadeIn direction="up" delay={0.1}>
               <span
-                className="font-body font-normal uppercase tracking-[0.22em]"
-                style={{ fontSize: '12px', color: 'var(--color-brand-accent-light)' }}
+                className="text-section-label font-normal uppercase tracking-[0.22em]"
+                style={{ color: 'var(--color-brand-accent-light)' }}
               >
                 {data.eyebrow}
               </span>
@@ -128,8 +128,7 @@ export function AboutSection({
                   return (
                     <span
                       key={line}
-                      className="block font-hero font-bold leading-[1.14] tracking-tight text-brand-white"
-                      style={{ fontSize: 'clamp(1.85rem, 2.75vw, 2.8rem)' }}
+                      className="block text-section-title leading-[1.14] tracking-tight text-brand-white"
                     >
                       {segs.map((seg) =>
                         seg.accent ? (

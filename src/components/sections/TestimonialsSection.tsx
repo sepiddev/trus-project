@@ -154,6 +154,10 @@ export function TestimonialsSection() {
   const globeVideoRef = useRef<HTMLVideoElement>(null)
   const scrollYMV     = useMotionValue(0)
   const [isDesktop, setIsDesktop] = useState(false)
+  // Defer the 3.3 MB globe video: only attach its src once the section nears the
+  // viewport, so it isn't fetched on initial page load. The container keeps its
+  // fixed reserved size meanwhile, so there is no layout shift when it loads.
+  const [globeNear, setGlobeNear] = useState(false)
 
   // Ensure the video plays — some browsers silently ignore the autoPlay attr
   const handleVideoReady = useCallback(() => {
@@ -168,6 +172,24 @@ export function TestimonialsSection() {
     v.addEventListener('canplay', handleVideoReady)
     return () => v.removeEventListener('canplay', handleVideoReady)
   }, [handleVideoReady])
+
+  // Lazy-load the globe video when the section comes within ~3 viewports, giving
+  // it ample time to buffer before it's actually on screen.
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || globeNear) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setGlobeNear(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '300% 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [globeNear])
 
   // Breakpoint listener
   useEffect(() => {
@@ -291,7 +313,7 @@ export function TestimonialsSection() {
           >
             <video
               ref={globeVideoRef}
-              src="/globe.mp4"
+              src={globeNear ? '/globe.mp4' : undefined}
               autoPlay
               loop
               muted
@@ -332,10 +354,9 @@ export function TestimonialsSection() {
             }}
           >
             <p
+              className="text-section-label"
               style={{
-                fontFamily:    'var(--font-body)',
                 fontWeight:    400,
-                fontSize:      '14px',
                 lineHeight:    '20px',
                 color:         '#9F7EE1',
                 textTransform: 'uppercase',
@@ -348,10 +369,8 @@ export function TestimonialsSection() {
             </p>
 
             <h2
+              className="text-section-title"
               style={{
-                fontFamily:    'var(--font-hero)',
-                fontWeight:    700,
-                fontSize:      'clamp(24px, 3.5vw, 32px)',
                 lineHeight:    '43px',
                 color:         '#FFFFFF',
                 textTransform: 'uppercase',
@@ -364,10 +383,9 @@ export function TestimonialsSection() {
             </h2>
 
             <p
+              className="text-section-subtitle"
               style={{
-                fontFamily: 'var(--font-body)',
                 fontWeight: 400,
-                fontSize:   '14px',
                 lineHeight: '26px',
                 color:      '#BFBFBF',
                 margin:     '4px 0 0 0',

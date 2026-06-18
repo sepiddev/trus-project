@@ -35,10 +35,9 @@ export function ContactSection() {
         {/* Eyebrow */}
         <FadeIn direction="up" delay={0.08}>
           <p
+            className="text-section-label"
             style={{
-              fontFamily:    'var(--font-body)',
               fontWeight:    400,
-              fontSize:      '14px',
               lineHeight:    '100%',
               color:         '#5B2BB9',
               textTransform: 'uppercase',
@@ -53,10 +52,8 @@ export function ContactSection() {
         {/* Heading */}
         <FadeIn direction="up" delay={0.16}>
           <h2
+            className="text-section-title"
             style={{
-              fontFamily: 'var(--font-hero)',
-              fontWeight: 700,
-              fontSize:   'clamp(28px, 3vw, 42px)',
               lineHeight: '100%',
               color:      '#070606',
               margin:     '0 0 48px 0',

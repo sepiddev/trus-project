@@ -142,6 +142,8 @@ export function FooterSection() {
             <img
               src={trusLogo}
               alt="TruS"
+              loading="lazy"
+              decoding="async"
               style={{ height: '44px', width: 'auto', display: 'block', marginBottom: '20px' }}
             />
             <p style={{

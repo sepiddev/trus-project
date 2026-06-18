@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, memo } from 'react'
 import { motion } from 'framer-motion'
 
 export interface TemplateCardProps {
@@ -26,7 +26,10 @@ export interface TemplateCardProps {
  * The glow wrapper sits OUTSIDE the clipped image container so border
  * glow is never cut off by overflow:hidden.
  */
-export const TemplateCard = forwardRef<HTMLDivElement, TemplateCardProps>(
+// memo: props are primitive (strings/number/booleans). The activation cascade
+// flips `isActivated` per card, so memo skips re-renders of cards whose state
+// is unchanged during the parent's scroll-driven updates.
+export const TemplateCard = memo(forwardRef<HTMLDivElement, TemplateCardProps>(
   function TemplateCard({ name, tag, image, height = 260, isActivated = false, isFeatured = false }, ref) {
     const glowColor    = isFeatured ? 'rgba(185, 130, 255, 0.9)'  : 'rgba(155, 100, 235, 0.75)'
     const glowColorDim = isFeatured ? 'rgba(135,  93, 217, 0.35)' : 'rgba(115,  70, 200, 0.25)'
@@ -154,6 +157,6 @@ export const TemplateCard = forwardRef<HTMLDivElement, TemplateCardProps>(
       </motion.div>
     )
   }
-)
+))
 
 export default TemplateCard

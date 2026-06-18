@@ -15,7 +15,7 @@ export interface ButtonProps {
 }
 
 const base =
-  'inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium font-body cursor-pointer transition-all focus-visible:outline-none select-none'
+  'inline-flex items-center justify-center gap-2 px-6 py-3 text-[16px] font-medium font-body cursor-pointer transition-all focus-visible:outline-none select-none'
 
 const variants: Record<ButtonVariant, string> = {
   'primary':

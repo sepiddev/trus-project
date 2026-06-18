@@ -214,9 +214,8 @@ export function PortfolioSection() {
               <div>
                 {/* Eyebrow */}
                 <p
-                  className="font-body font-normal uppercase tracking-[0.22em]"
+                  className="text-section-label font-normal uppercase tracking-[0.22em]"
                   style={{
-                    fontSize:     '14px',
                     lineHeight:   '20px',
                     color:        '#9F7EE1',
                     marginBottom: '0px',
@@ -227,9 +226,8 @@ export function PortfolioSection() {
 
                 {/* Heading */}
                 <h2
-                  className="font-hero font-bold uppercase"
+                  className="text-section-title uppercase"
                   style={{
-                    fontSize:     '32px',
                     lineHeight:   '1.1',
                     marginBottom: '5px',
                     color:        '#111111',
@@ -240,8 +238,8 @@ export function PortfolioSection() {
 
                 {/* Description — two lines as specified */}
                 <div
-                  className="font-body font-normal"
-                  style={{ fontSize: '16px', lineHeight: '20px', color: '#555555' }}
+                  className="text-section-subtitle font-normal"
+                  style={{ lineHeight: '20px', color: '#555555' }}
                 >
                   {siteConfig.portfolio.description.map((line, i) => (
                     <p key={i} style={{ margin: 1 }}>{line}</p>

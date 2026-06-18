@@ -202,10 +202,9 @@ export function WhyUsSection() {
             <div className="flex flex-col items-center gap-3 text-center">
               <FadeIn direction="up" delay={0.10}>
                 <span
+                  className="text-section-label"
                   style={{
-                    fontFamily:    'var(--font-body)',
                     fontWeight:    400,
-                    fontSize:      '12px',
                     letterSpacing: '0.22em',
                     textTransform: 'uppercase',
                     color:         'var(--color-brand-accent-light)',
@@ -217,10 +216,8 @@ export function WhyUsSection() {
 
               <FadeIn direction="up" delay={0.22}>
                 <h2
+                  className="text-section-title"
                   style={{
-                    fontFamily:    'var(--font-hero)',
-                    fontWeight:    700,
-                    fontSize:      'clamp(1.75rem, 3vw, 2.75rem)',
                     lineHeight:    1.12,
                     letterSpacing: '-0.01em',
                     color:         '#FFFFFF',

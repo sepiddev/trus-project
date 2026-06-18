@@ -76,9 +76,8 @@ export function TeamSection() {
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: '6px' }}>
         <FadeIn direction="up" delay={0.08}>
           <p
+            className="text-section-label"
             style={{
-              fontFamily:    'var(--font-body)',
-              fontSize:      '14px',
               fontWeight:    400,
               lineHeight:    '20px',
               color:         '#9F7EE1',
@@ -93,11 +92,12 @@ export function TeamSection() {
 
         <FadeIn direction="up" delay={0.16}>
           <h2
+            className="text-section-title"
             style={{
-              fontFamily: 'var(--font-hero)',
-              // Slightly tighter size so the longest line fits the 360px column cleanly
-              fontSize:   '30px',
-              fontWeight: 700,
+              // Section-title system (DM Sans / 700) but capped: this editorial
+              // heading lives in a fixed 360px column, so the full 42px clamp
+              // would overflow. Size stays tuned to fit the column.
+              fontSize:   'clamp(24px, 2.3vw, 32px)',
               lineHeight: 1.18,
               color:      '#FFFFFF',
               margin:     0,
