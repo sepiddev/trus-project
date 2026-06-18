@@ -48,9 +48,22 @@ function useScrollSpy(): string {
       setActive(current)
     }
 
-    window.addEventListener('scroll', update, { passive: true })
+    // rAF-throttle: coalesce bursts of scroll events into one layout read per frame.
+    let frame = 0
+    const onScroll = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        update()
+      })
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
     update() // initialise immediately so state is correct on mount
-    return () => window.removeEventListener('scroll', update)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
   }, []) // empty — TRACKED_SECTION_IDS and TRIGGER_FRACTION are module-level constants
 
   return active
@@ -127,6 +140,7 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
             <img
               src={trusLogo}
               alt="TruS"
+              decoding="async"
               style={{ height: '32px', width: 'auto', display: 'block' }}
             />
           </a>

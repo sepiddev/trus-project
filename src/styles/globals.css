@@ -88,3 +88,38 @@
     outline: none;
   }
 }
+
+/* ─── Global Typography System ──────────────────────────────────────────────────
+   Standardized text styles applied across every section. Each utility sets only
+   font-family / size / weight — colour, tracking, uppercase, and margins stay on
+   the element so existing design isn't disturbed. Sizes target the spec value on
+   desktop and scale down with clamp() to stay responsive on small screens.
+
+     Section label  → Inter 14px        (SERVICES, ABOUT US …)
+     Section title  → DM Sans 42px bold  (OUR SERVICES, CUSTOMER SUCCESS STORIES …)
+     Subtitle       → Inter 18px         (descriptive text under section titles)
+     Hero subtitle  → Inter 22px         (Hero only)
+   Buttons (Inter 16px) are set in components/ui/Button.tsx.
+─────────────────────────────────────────────────────────────────────────────── */
+@layer components {
+  .text-section-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+  }
+
+  .text-section-title {
+    font-family: var(--font-hero);
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 42px);
+  }
+
+  .text-section-subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(16px, 1.6vw, 18px);
+  }
+
+  .text-hero-subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(18px, 2.2vw, 22px);
+  }
+}

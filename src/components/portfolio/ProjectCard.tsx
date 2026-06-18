@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 interface ProjectCardProps {
   name:     string
   category: string
@@ -21,7 +23,9 @@ interface ProjectCardProps {
  *   Everything inside the outer div below the outer shell div is placeholder.
  *   Swap the inner <div> for an <img> when screenshots are ready.
  */
-export function ProjectCard({ name, category, accent, bg }: ProjectCardProps) {
+// memo: props are all static strings (no callbacks/MotionValues), so the card
+// skips re-render during the parent's scroll-driven horizontal parallax updates.
+export const ProjectCard = memo(function ProjectCard({ name, category, accent, bg }: ProjectCardProps) {
   return (
     <div
       style={{
@@ -90,6 +94,6 @@ export function ProjectCard({ name, category, accent, bg }: ProjectCardProps) {
       </div>
     </div>
   )
-}
+})
 
 export default ProjectCard

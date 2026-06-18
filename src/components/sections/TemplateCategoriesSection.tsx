@@ -188,9 +188,8 @@ export function TemplateCategoriesSection() {
                 {/* Eyebrow */}
                 <FadeIn direction="up" delay={0.08}>
                   <p
+                    className="text-section-label"
                     style={{
-                      fontFamily:    'var(--font-body)',
-                      fontSize:      '14px',
                       fontWeight:    400,
                       lineHeight:    '20px',
                       color:         '#9F7EE1',
@@ -206,10 +205,8 @@ export function TemplateCategoriesSection() {
                 {/* Heading */}
                 <FadeIn direction="up" delay={0.18}>
                   <h2
+                    className="text-section-title"
                     style={{
-                      fontFamily:  'var(--font-hero)',
-                      fontSize:    '32px',
-                      fontWeight:  700,
                       lineHeight:  '67.2px',
                       color:       '#FFFFFF',
                       margin:      0,
@@ -223,9 +220,8 @@ export function TemplateCategoriesSection() {
                 {/* Description */}
                 <FadeIn direction="up" delay={0.28}>
                   <p
+                    className="text-section-subtitle"
                     style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize:   '16px',
                       fontWeight: 400,
                       lineHeight: '28px',
                       color:      '#BFBFBF',
