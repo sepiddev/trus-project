@@ -46,7 +46,7 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
                   <FadeIn key={line} delay={0.12 + i * 0.16} direction="up">
                     <span
                       className="block font-hero font-normal leading-[1.12] tracking-tight"
-                      style={{ fontSize: 'clamp(2.1rem, 3.4vw, 3.1rem)' }}
+                      style={{ fontSize: 'clamp(2rem, 2.6vw, 3.1rem)' }}
                     >
                       {segs.map((seg) =>
                         seg.accent ? (

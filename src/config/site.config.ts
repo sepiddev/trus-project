@@ -22,23 +22,24 @@ export const siteConfig = {
       { label: 'Services',  href: '#services'  },
       { label: 'Contact',   href: '#contact'   },
     ],
-    cta: { label: 'Get Started', href: '#contact' },
+    cta: { label: 'Language', href: '#contact' },
   },
 
   hero: {
     /** Displayed below CTAs as "We ◉ READY-MADE TEMPLATES" */
-    badge:       'READY-MADE TEMPLATES',
-    badgePrefix: 'We',
+    badge:       'Web Development',
+    badgePrefix: 'Services',
     /**
      * Headline lines. Use [word] to apply accent color + bold weight to that word.
      * The last line gets a blinking cursor appended.
      */
     headline: [
-      'Turning Ideas',
-      'into Products',
-      'at [TruS]',
+      'TRUS delivers smart websites',
+      'and automated marketing',
+      'for business growth powered',
+      'by [GrowthAI]',
     ] as const,
-    body: 'Carefully crafted templates designed to help you launch faster and grow smarter.',
+    body: 'Turns your website into a 24/7 growth system that brings customers, grows sales, and automates your marketing—without extra staff.',
     cta: {
       primary:   { label: 'Browse Templates', href: '#templates' },
       secondary: { label: 'Why TruS',         href: '#about'     },
@@ -88,7 +89,8 @@ export const siteConfig = {
 
   whyUs: {
     eyebrow: 'WHY US',
-    headline: ['WHY THOUSANDS CHOOSE', 'OUR TEMPLATES'] as const,
+    headline: ['Why Businesses Choose TruS'] as const,
+    
     cards: [
       {
         number:      '01',

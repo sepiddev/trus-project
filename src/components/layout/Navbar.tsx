@@ -109,7 +109,7 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
           aria-hidden="true"
         >
           <div
-            className="w-full max-w-[1200px] h-px"
+            className="w-full max-w-300 h-px"
             style={{ background: 'rgba(255,255,255,0.18)' }}
           />
         </div>
@@ -132,7 +132,7 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
           </a>
 
           {/* Desktop nav links */}
-          <ul className="hidden lg:flex items-center gap-[10px]" role="list">
+          <ul className="hidden lg:flex items-center gap-2.5" role="list">
             {data.links.map((link) => {
               // Derive the section ID from the href.
               // href '#'       → sectionId ''        → active when at top of page
@@ -153,7 +153,7 @@ export function Navbar({ data = siteConfig.nav }: NavbarProps) {
             <Button
               variant="gradient"
               href={data.cta.href}
-              className="h-[44px] w-[148px] text-[16px] font-medium"
+              className="h-11 w-37 text-body font-medium"
             >
               {data.cta.label}
             </Button>
