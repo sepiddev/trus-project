@@ -3,7 +3,7 @@
 /* ─── Design Tokens ─────────────────────────────────────────────────────────── */
 @theme {
   /* Colors */
-  --color-brand-bg:           #07070D;
+  --color-brand-bg:           #000000;
   --color-brand-surface:      #0F0F18;
   --color-brand-surface-2:    #141420;
   --color-brand-accent:       #875DD9;

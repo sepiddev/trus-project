@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { parseHeadline } from '@/utils/text'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { Button } from '@/components/ui/Button'
 import { FadeIn } from '@/components/motion/FadeIn'
-import { BackgroundStars } from '@/components/hero/BackgroundStars'
+// import { BackgroundStars } from '@/components/hero/BackgroundStars'
 
 export interface HeroSectionProps {
   data?: typeof siteConfig.hero
@@ -24,7 +23,7 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
       aria-label="Hero"
     >
       {/* ── Background ── */}
-      <BackgroundStars />
+      {/* <BackgroundStars /> */}
 
       {/* ── Main content grid ── */}
       <div
@@ -47,29 +46,20 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
                   <FadeIn key={line} delay={0.12 + i * 0.16} direction="up">
                     <span
                       className="block font-hero font-normal leading-[1.12] tracking-tight"
-                      // Hero-only sizing. Middle ground — commanding but not loud.
-                      // Capped at 3rem so the longest line never overflows the fixed
-                      // ~754px copy column on wide screens.
-                      style={{ fontSize: 'clamp(2rem, 2.8vw, 2.85rem)' }}
+                      style={{ fontSize: 'clamp(2rem, 2.7vw, 3.1rem)' }}
                     >
                       {segs.map((seg) =>
                         seg.accent ? (
-                          // The accent word on the final line types/deletes in a
-                          // continuous loop; accent words on other lines are static.
-                          isLast ? (
-                            <TypingWord key={seg.text} text={seg.text} />
-                          ) : (
-                            <span
-                              key={seg.text}
-                              className="font-bold"
-                              style={{
-                                color:      'var(--color-brand-accent)',
-                                textShadow: '0 0 30px rgba(135,93,217,0.7)',
-                              }}
-                            >
-                              {seg.text}
-                            </span>
-                          )
+                          <span
+                            key={seg.text}
+                            className="font-bold"
+                            style={{
+                              color:      'var(--color-brand-accent)',
+                              textShadow: '0 0 30px rgba(135,93,217,0.7)',
+                            }}
+                          >
+                            {seg.text}
+                          </span>
                         ) : (
                           <span key={seg.text} className="text-brand-white">
                             {seg.text}
@@ -86,11 +76,8 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
             {/* Subtitle */}
             <FadeIn delay={0.52} direction="up">
               <p
-                className="text-hero-subtitle font-normal text-brand-muted leading-relaxed"
-                // Hero-only override of the subtitle size for visual balance against the
-                // enlarged headline — eased down from 22px so it supports, not competes.
-                // The global .text-hero-subtitle token is left untouched.
-                style={{ maxWidth: '440px', fontSize: 'clamp(17px, 1.4vw, 19px)' }}
+                className="font-body font-normal text-brand-muted leading-relaxed"
+                style={{ fontSize: '1rem', maxWidth: '440px' }}
               >
                 {data.body}
               </p>
@@ -125,7 +112,7 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
             style={{
               opacity: orbitOpacity,
               x: 20,
-              scale: 1.45,
+              scale: 1.1,
               transformOrigin: 'center right',
             }}
           >
@@ -219,7 +206,7 @@ function HeroVideo({ onReady }: { onReady?: () => void }) {
     >
 
       {/* Atmospheric glow — intentionally larger than the video */}
-      <div
+      {/* <div
         aria-hidden="true"
         style={{
           position:   'absolute',
@@ -236,7 +223,7 @@ function HeroVideo({ onReady }: { onReady?: () => void }) {
           filter:     'blur(32px)',
           zIndex:     0,
         }}
-      />
+      /> */}
 
       {/* Video — 30 % wider than column, centred, all four edges faded */}
       <video
@@ -250,10 +237,10 @@ function HeroVideo({ onReady }: { onReady?: () => void }) {
           position:  'relative',
           zIndex:    1,
           display:   'block',
-          transform: 'translateY(-20px)',
+          transform: 'translateY(-5px)',
           // 30 % size increase: 130 % width, centred via negative left margin
           width:              '190%',
-          marginLeft:         '-15%',
+          marginLeft:         '-33%',
           height:             'auto',
           // Screen blend — makes the video's dark background pixels
           // identical to the page background (effectively transparent)
@@ -265,76 +252,10 @@ function HeroVideo({ onReady }: { onReady?: () => void }) {
           maskComposite:       'intersect',         // standard
         }}
       >
-        <source src="/hero-galaxy.mp4" type="video/mp4" />
+        <source src="/map world 2k_v5_1.webm" type="video/mp4" />
       </video>
 
     </div>
-  )
-}
-
-// ─── TypingWord ───────────────────────────────────────────────────────────────
-/**
- * Renders the accent word with a continuous, premium typing loop:
- *   type in char-by-char → pause full → delete char-by-char → pause empty → repeat.
- * Keeps the existing accent styling. Honours prefers-reduced-motion by rendering
- * the full word statically (no animation). The blinking caret is owned separately
- * by <CursorBlink>, which sits immediately after this word at the line's end.
- */
-function TypingWord({ text }: { text: string }) {
-  const reduceMotion = useReducedMotion()
-  const [count, setCount] = useState(reduceMotion ? text.length : 0)
-
-  useEffect(() => {
-    if (reduceMotion) {
-      setCount(text.length)
-      return
-    }
-
-    // Pacing — deliberately unhurried so the effect reads as premium, not frantic.
-    const TYPE_MS = 95
-    const DELETE_MS = 55
-    const PAUSE_FULL_MS = 1500
-    const PAUSE_EMPTY_MS = 550
-
-    let i = 0
-    let deleting = false
-    let timer = window.setTimeout(step, PAUSE_EMPTY_MS)
-
-    function step() {
-      if (!deleting) {
-        i += 1
-        setCount(i)
-        if (i >= text.length) {
-          deleting = true
-          timer = window.setTimeout(step, PAUSE_FULL_MS)
-        } else {
-          timer = window.setTimeout(step, TYPE_MS)
-        }
-      } else {
-        i -= 1
-        setCount(i)
-        if (i <= 0) {
-          deleting = false
-          timer = window.setTimeout(step, PAUSE_EMPTY_MS)
-        } else {
-          timer = window.setTimeout(step, DELETE_MS)
-        }
-      }
-    }
-
-    return () => window.clearTimeout(timer)
-  }, [text, reduceMotion])
-
-  return (
-    <span
-      className="font-bold"
-      style={{
-        color:      'var(--color-brand-accent)',
-        textShadow: '0 0 30px rgba(135,93,217,0.7)',
-      }}
-    >
-      {text.slice(0, count)}
-    </span>
   )
 }
 
