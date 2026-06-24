@@ -46,7 +46,7 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
                   <FadeIn key={line} delay={0.12 + i * 0.16} direction="up">
                     <span
                       className="block font-hero font-normal leading-[1.12] tracking-tight"
-                      style={{ fontSize: 'clamp(2rem, 2.7vw, 3.1rem)' }}
+                      style={{ fontSize: 'clamp(2rem, 2vw, 3.1rem)' }}
                     >
                       {segs.map((seg) =>
                         seg.accent ? (
@@ -240,7 +240,7 @@ function HeroVideo({ onReady }: { onReady?: () => void }) {
           transform: 'translateY(-5px)',
           // 30 % size increase: 130 % width, centred via negative left margin
           width:              '190%',
-          marginLeft:         '-33%',
+          marginLeft:         '-25%',
           height:             'auto',
           // Screen blend — makes the video's dark background pixels
           // identical to the page background (effectively transparent)
