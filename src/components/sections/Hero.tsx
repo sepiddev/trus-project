@@ -243,7 +243,7 @@ function HeroVideo({ onReady }: { onReady?: () => void }) {
           marginLeft:         '-25%',
           height:             'auto',
           // Screen blend — makes the video's dark background pixels
-          // identical to the page background ( effectively transparent)
+          // identical to the page background ( effectively  transparent)
           mixBlendMode:       'screen',
           // Dual-axis mask: H gradient × V gradient = precise 4-edge fade
           WebkitMaskImage:     `${maskH}, ${maskV}`,
