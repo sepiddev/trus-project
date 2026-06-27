@@ -98,6 +98,28 @@ export const siteConfig = {
     stats: en.hero.stats,
   },
 
+  /**
+   * Hero scene overlay — glass service "nodes" floating over the map video.
+   * `x`/`y` are percentages of the video frame box, so cards track the scene
+   * across breakpoints. Placement is organic/scattered (not strict columns) and
+   * tuned to clear the central T and each other and to stay inside the container
+   * (right-edge cards ≤ container, left-edge cards ≥ the copy column). `id`
+   * selects the icon. `priority` controls which cards survive when fewer are
+   * shown on smaller screens (lower = kept first; interleaved for balance).
+   * `delay` (ms) staggers the first CRT power-on.
+   */
+  heroScene: {
+    video: '/with out boxesand T map world 2k.webm',
+    cards: [
+      { id: 'web-design',          title: 'Web Design',          x: 40, y:  9, priority: 1, delay: 200  },
+      { id: 'ai-lead-finder',      title: 'AI Lead Finder',      x: 72, y: 18, priority: 2, delay: 600  },
+      { id: 'ai-content-creator',  title: 'AI Content Creator',  x: 18, y: 60, priority: 3, delay: 1100 },
+      { id: 'ai-online-book',      title: 'AI Online Book',      x: 78, y: 34, priority: 4, delay: 1500 },
+      { id: 'grow-ai',             title: 'Grow AI',             x: 26, y: 84, priority: 5, delay: 850  },
+      { id: 'ai-email-newsletter', title: 'AI Email Newsletter', x: 56, y: 85, priority: 6, delay: 350  },
+    ],
+  },
+
   about: {
     eyebrow:  en.about.eyebrow,
     headline: en.about.headline,

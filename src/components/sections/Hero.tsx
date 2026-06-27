@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
 import { motion, MotionValue } from 'framer-motion'
 import { siteConfig } from '@/config/site.config'
 import { parseHeadline } from '@/utils/text'
 import { Button } from '@/components/ui/Button'
 import { FadeIn } from '@/components/motion/FadeIn'
+import { HeroScene } from '@/components/hero/HeroScene'
 // import { BackgroundStars } from '@/components/hero/BackgroundStars'
 
 export interface HeroSectionProps {
@@ -30,7 +30,7 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
         className="relative z-10 mx-auto w-full max-w-300 px-5 flex items-center"
         style={{ minHeight: '100svh', paddingTop: '88px', paddingBottom: '80px' }}
       >
-        <div className="grid w-full grid-cols-1 lg:grid-cols-[65%_80%] items-center gap-4">
+        <div className="grid w-full grid-cols-1 lg:grid-cols-[56%_minmax(0,1fr)] items-center gap-4">
 
           {/* ═══════════════════════════════════════════════════════════════
               LEFT COLUMN — copy (unchanged)
@@ -104,19 +104,14 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
           </div>
 
           {/* ═══════════════════════════════════════════════════════════════
-              RIGHT COLUMN — video placeholder
+              RIGHT COLUMN — interactive map scene (video + T core + cards)
               Hidden on mobile; visible on lg+ only.
           ══════════════════════════════════════════════════════════════════ */}
           <motion.div
-            className="hidden lg:flex items-center justify-center"
-            style={{
-              opacity: orbitOpacity,
-              x: 20,
-              scale: 1.1,
-              transformOrigin: 'center right',
-            }}
+            className="hidden lg:block w-full"
+            style={{ opacity: orbitOpacity }}
           >
-            <HeroVideo onReady={onVideoReady} />
+            <HeroScene onReady={onVideoReady} />
           </motion.div>
 
         </div>
@@ -125,138 +120,6 @@ export function HeroSection({ data = siteConfig.hero, orbitOpacity, onVideoReady
       {/* ── Bottom label ── */}
       <BottomLabel badge={data.badge} prefix={data.badgePrefix} />
     </section>
-  )
-}
-
-// ─── HeroVideo ────────────────────────────────────────────────────────────────
-/**
- * Temporary video placeholder — right-side Hero visual.
- *
- * "Floating in space" technique — three layers:
- *
- * 1. GLOW  — absolute div, bleeds 45 % beyond the video on every side,
- *            completely detached from any box boundary.
- *
- * 2. SIZE  — video is rendered at 130 % of the column width and shifted
- *            left by 15 % so it is centred. The extra 15 % on each side
- *            sits in the fade zone so the active galaxy content is still
- *            ~30 % larger than the old implementation.
- *
- * 3. MASK  — two intersecting linear gradients (one per axis) instead of
- *            a single radial gradient. This gives independent, precise
- *            control over each of the four edges with no ellipse maths:
- *              H: transparent → black 22 % … 78 % → transparent
- *              V: transparent → black 25 % … 75 % → transparent
- *            Combined with mix-blend-mode: screen (dark pixels → transparent)
- *            the edges dissolve completely — no rectangular frame.
- */
-function HeroVideo({ onReady }: { onReady?: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  // Signal readiness only once the video is buffered enough to play through,
-  // so the loader hands off to a live galaxy rather than a frozen first frame.
-  // Guards: a warm-cache check (events may have fired pre-mount), an `error`
-  // path so a failed/404 video never blocks the loader, and a `canplay` grace
-  // for conservative browsers that delay/skip `canplaythrough`.
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video || !onReady) return
-
-    let settled = false
-    let graceTimer: number | undefined
-    const settle = () => {
-      if (settled) return
-      settled = true
-      window.clearTimeout(graceTimer)
-      onReady()
-    }
-
-    // HAVE_ENOUGH_DATA already (e.g. cached on reload / HMR).
-    if (video.readyState >= 4) {
-      settle()
-      return
-    }
-
-    const onCanPlay = () => { graceTimer = window.setTimeout(settle, 2500) }
-
-    video.addEventListener('canplaythrough', settle)
-    video.addEventListener('canplay', onCanPlay)
-    video.addEventListener('error', settle)
-    return () => {
-      window.clearTimeout(graceTimer)
-      video.removeEventListener('canplaythrough', settle)
-      video.removeEventListener('canplay', onCanPlay)
-      video.removeEventListener('error', settle)
-    }
-  }, [onReady])
-
-  // Horizontal and vertical fade gradients — each fades its respective edges
-  const maskH = 'linear-gradient(to right,  transparent 0%, black 52%, black 78%, transparent 100%)'
-  const maskV = 'linear-gradient(to bottom, transparent 0%, black 15%, black 75%, transparent 100%)'
-
-  return (
-    // No maxWidth, no background, no border, no overflow:hidden.
-    // overflow:visible (default) lets the video and glow bleed naturally.
-    <div
-      style={{
-        position:      'relative',
-        width:         '100%',
-        pointerEvents: 'none',   // never block left-column clicks
-      }}
-    >
-
-      {/* Atmospheric glow — intentionally larger than the video */}
-      {/* <div
-        aria-hidden="true"
-        style={{
-          position:   'absolute',
-          top:        '-28%',
-          left:       '-35%',
-          right:      '-28%',
-          bottom:     '-45%',
-          background:
-            'radial-gradient(ellipse 55% 55% at 52% 45%,' +
-            ' rgba(118,42,240,0.55) 0%,' +
-            ' rgba(88,18,198,0.26) 38%,' +
-            // ' rgba(55,8,145,0.10) 75%,' +
-            ' transparent 70%)',
-          filter:     'blur(32px)',
-          zIndex:     0,
-        }}
-      /> */}
-
-      {/* Video — 30 % wider than column, centred, all four edges faded */}
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        style={{
-          position:  'relative',
-          zIndex:    1,
-          display:   'block',
-          transform: 'translateY(-5px)',
-          // 30 % size increase: 130 % width, centred via negative left margin
-          width:              '190%',
-          marginLeft:         '-25%',
-          height:             'auto',
-          // Screen blend — makes the video's dark background pixels
-          // identical to the page background ( effectively  transparent)
-          mixBlendMode:       'screen',
-          // Dual-axis mask: H gradient × V gradient = precise 4-edge fade
-          WebkitMaskImage:     `${maskH}, ${maskV}`,
-          WebkitMaskComposite: 'destination-in',   // WebKit intersection
-          maskImage:           `${maskH}, ${maskV}`,
-          maskComposite:       'intersect',         // standard
-        }}
-      >
-        <source src="/with out boxesand T map world 2k.webm" type="video/mp4" />
-
-      </video>
-
-    </div>
   )
 }
 
